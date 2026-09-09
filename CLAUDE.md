@@ -11,10 +11,11 @@ Radar de caja inteligente para pymes colombianas. App PWA + Skill Alexa + bot Wh
 - Integraciones: Anthropic API, Meta Cloud API, Twilio, Alexa Skills Kit
 
 ## Prioridades actuales
-1. Resolver verificación WhatsApp con Meta (dirección RUT, email admin@ingizer.com)
-2. Plan B: crear WABA bajo portafolio Ingizer SAS
-3. Probar skill Alexa en Echo físico e invitar testers
-4. Decidir si implementar facturación POS por voz
+1. Esperar decisión de Meta sobre verificación de organización (reintentada 2026-09-09, dirección/NIT/RUT/email corregidos, estado "Verification in progress")
+2. Cuando quede "Verified": conectar la app al portfolio PosBank y completar credenciales de WhatsApp en Railway
+3. Plan B si falla: crear WABA bajo portafolio Ingizer SAS
+4. Probar skill Alexa en Echo físico e invitar testers
+5. Decidir si implementar facturación POS por voz
 
 ## Arquitectura
 - Multi-tenant con Row Level Security en Supabase
