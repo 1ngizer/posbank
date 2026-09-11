@@ -18,6 +18,10 @@ Radar de caja inteligente para pymes colombianas. Consultable vía app, Alexa o 
 - Skill Alexa (32/32 tests pasando, timeout resuelto con paralelización)
 - Backend WhatsApp (enrutamiento, servicios, parsers)
 
+## Hecho Recientemente (2026-09-11, parte 2)
+
+- [x] **NLU de respaldo con Claude en WhatsApp** (`src/integrations/whatsapp/nlu.ts`): cuando el parser por regex (`parser.ts`) no reconoce un mensaje, se pasa a Claude Opus 5 con `json_schema` para interpretar lenguaje libre, jerga colombiana ("lucas", "palos") y typos. No rompe nada si falta `ANTHROPIC_API_KEY` o si Claude falla — cae a "no entendí" igual que antes. Inerte hasta que WhatsApp esté activo. 5 tests nuevos (43/43 en total).
+
 ## Hecho Recientemente (2026-09-11)
 
 - [x] **Fix de seguridad crítico:** `/api/v1/alexa/intent` no verificaba nada (ni firma de Amazon, ni applicationId, ni auth) — cualquiera con un `alexa_user_id` podía llamar el endpoint directamente y mover datos reales (facturar, marcar pagos, leer caja). Se agregó `alexa.verify.ts`: verificación de firma RSA-SHA256 + cadena de certificado de Amazon + `applicationId` contra `ALEXA_SKILL_ID` + tolerancia de timestamp (anti-replay). Desplegado a producción y verificado: peticiones sin `applicationId` correcto ahora responden 403. **Pendiente validar con un intent real desde el simulador/Echo** para confirmar que la verificación de firma no rompe el flujo legítimo.
