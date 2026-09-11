@@ -18,6 +18,12 @@ Radar de caja inteligente para pymes colombianas. Consultable vía app, Alexa o 
 - Skill Alexa (32/32 tests pasando, timeout resuelto con paralelización)
 - Backend WhatsApp (enrutamiento, servicios, parsers)
 
+## Hecho Recientemente (2026-09-11)
+
+- [x] **Fix de seguridad crítico:** `/api/v1/alexa/intent` no verificaba nada (ni firma de Amazon, ni applicationId, ni auth) — cualquiera con un `alexa_user_id` podía llamar el endpoint directamente y mover datos reales (facturar, marcar pagos, leer caja). Se agregó `alexa.verify.ts`: verificación de firma RSA-SHA256 + cadena de certificado de Amazon + `applicationId` contra `ALEXA_SKILL_ID` + tolerancia de timestamp (anti-replay). Desplegado a producción y verificado: peticiones sin `applicationId` correcto ahora responden 403. **Pendiente validar con un intent real desde el simulador/Echo** para confirmar que la verificación de firma no rompe el flujo legítimo.
+- [x] `ALEXA_SKILL_ID` configurado en Railway (posbank-api) — antes existía en el schema de env pero nunca se usaba en el código.
+- [x] 6 tests nuevos para la verificación (38/38 tests pasando en total).
+
 ## Hecho Recientemente (2026-09-09)
 
 - [x] Corregida dirección en Business Info del portfolio PosBank: Cra 80 Bis No. 7A - 15, Bogotá D.C., 110931 (idéntica al RUT)
@@ -25,6 +31,12 @@ Radar de caja inteligente para pymes colombianas. Consultable vía app, Alexa o 
 - [x] Estado actual en Meta: **"Verification in progress"** — respuesta esperada en pocas horas
 
 ## Tareas en Progreso
+
+### Seguridad (Alta Prioridad)
+- [ ] Validar en el simulador de Alexa o un Echo real que un intent legítimo sigue funcionando tras el fix de verificación de firma
+- [ ] `npm audit fix` — vulnerabilidades moderadas en dependencias (qs vía express, uuid vía node-cron)
+- [ ] Agregar rate limiting en `/scan/invoice` (cada llamada cuesta ~USD 0.014 vía Claude)
+- [ ] Implementar recuperación de contraseña (no existe hoy en frontend ni backend)
 
 ### Verificación WhatsApp (Alta Prioridad)
 - [ ] Esperar decisión de Meta sobre la verificación de organización
