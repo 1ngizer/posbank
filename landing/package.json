@@ -1,0 +1,15 @@
+{
+  "name": "posbank-landing",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Landing de PosBank (posbank.ingizer.com) — sitio estático servido por Node sin dependencias.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "author": "Ingizer SAS <Admin@ingizer.com>",
+  "license": "UNLICENSED"
+}

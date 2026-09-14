@@ -1,0 +1,8 @@
+.mas-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:520px){.mas-grid{grid-template-columns:1fr}}
+/* En escritorio estos atajos ya están en el menú lateral: solo serían ruido. */
+@media(min-width:861px){.mas-grid{display:none}}
+.mas-card{display:flex;align-items:center;gap:14px;transition:.15s}
+.mas-card:hover{border-color:var(--green);transform:translateY(-2px);box-shadow:var(--shadow-sm)}
+.mas-t{font-weight:600;color:var(--navy);font-size:.95rem}
+.mas-d{font-size:.76rem;color:var(--muted)}

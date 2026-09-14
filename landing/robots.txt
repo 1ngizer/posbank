@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+
+# Bloquea assets de marca de la búsqueda de imágenes si algún día no interesa indexarlos
+# (por ahora se permiten: ayudan al reconocimiento de marca)
+
+Sitemap: https://posbank.ingizer.com/sitemap.xml

@@ -1,0 +1,62 @@
+{
+  "name": "posbank",
+  "version": "0.1.0",
+  "description": "PosBank — Radar de caja inteligente para pymes. Despues del banco, la inteligencia. (Ingizer SAS)",
+  "main": "dist/server.js",
+  "type": "commonjs",
+  "scripts": {
+    "dev": "ts-node-dev --respawn --transpile-only src/server.ts",
+    "build": "tsc -p tsconfig.json",
+    "start": "node dist/server.js",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "jobs": "ts-node-dev --transpile-only src/jobs/index.ts",
+    "seed": "ts-node-dev --transpile-only src/scripts/seed.ts",
+    "create-admin": "ts-node-dev --transpile-only src/scripts/create-admin.ts",
+    "db:link": "supabase link --project-ref",
+    "db:push": "supabase db push",
+    "db:diff": "supabase db diff",
+    "db:reset": "supabase db reset --linked",
+    "db:migration": "supabase migration new"
+  },
+  "keywords": [
+    "fintech",
+    "cashflow",
+    "pymes",
+    "colombia",
+    "ingizer"
+  ],
+  "author": "Ingizer SAS <Admin@ingizer.com>",
+  "license": "UNLICENSED",
+  "private": true,
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.115.0",
+    "@supabase/supabase-js": "^2.45.4",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "express-rate-limit": "^8.7.0",
+    "helmet": "^7.1.0",
+    "node-cron": "^3.0.3",
+    "node-forge": "^1.4.0",
+    "pino": "^9.4.0",
+    "pino-http": "^10.3.0",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.17",
+    "@types/express": "^4.17.21",
+    "@types/express-rate-limit": "^5.1.3",
+    "@types/node": "^22.7.4",
+    "@types/node-cron": "^3.0.11",
+    "@types/node-forge": "^1.3.14",
+    "pino-pretty": "^11.2.2",
+    "ts-node-dev": "^2.0.0",
+    "typescript": "^5.6.2",
+    "vitest": "^2.1.1"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}

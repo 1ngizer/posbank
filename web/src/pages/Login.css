@@ -1,0 +1,26 @@
+.login-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;
+  background:linear-gradient(160deg,var(--navy) 0%,#0C2537 60%,#123A54 100%)}
+.login-card{background:var(--surface);border-radius:18px;box-shadow:0 30px 70px -24px rgba(0,0,0,.5);
+  padding:32px 28px;width:100%;max-width:400px}
+.login-logo{height:34px;width:auto;display:block;margin:0 auto 6px}
+.login-tag{text-align:center;color:var(--green);font-weight:600;font-size:.86rem;margin-bottom:22px}
+
+.seg{display:flex;background:var(--bg);border:1px solid var(--border);border-radius:var(--r-btn);padding:4px;margin-bottom:20px}
+.seg button{flex:1;border:none;background:transparent;padding:.55rem;border-radius:8px;font-weight:600;font-size:.86rem;color:var(--muted)}
+.seg button.on{background:var(--surface);color:var(--navy);box-shadow:var(--shadow-sm)}
+
+.login-error{background:var(--bad-bg);color:var(--bad-ink);font-size:.82rem;padding:9px 12px;border-radius:9px;margin-bottom:12px;font-weight:500}
+
+/* separador "o" */
+.or{display:flex;align-items:center;gap:12px;margin:18px 0;color:var(--subtle);font-size:.78rem}
+.or::before,.or::after{content:"";flex:1;height:1px;background:var(--border)}
+
+/* botón Google (blanco, según guías de marca de Google) */
+.btn-google{width:100%;background:#fff;border:1px solid var(--border);color:#3c4043;font-weight:600}
+.btn-google:hover{background:#f8f9fa;border-color:var(--muted)}
+.btn-google:disabled{opacity:.6;cursor:not-allowed}
+.login-hint{text-align:center;font-size:.78rem;color:var(--muted);margin-top:16px}
+.login-hint b{color:var(--text)}
+.login-success{background:rgba(16,185,129,.12);color:#065f46;font-size:.82rem;padding:9px 12px;border-radius:9px;margin-bottom:12px;font-weight:500;text-align:center}
+.login-forgot-link{background:none;border:none;color:var(--muted);font-size:.78rem;cursor:pointer;padding:0;margin-top:6px;display:inline-block;text-decoration:underline}
+.login-forgot-link:hover{color:var(--navy)}

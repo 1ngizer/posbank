@@ -1,0 +1,24 @@
+.chart-wrap{position:relative}
+.chart-axis{stroke:var(--border);stroke-width:1}
+.chart-area{fill:rgba(4,197,55,.12)}
+.chart-line{stroke:var(--green);stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round}
+.chart-cross{stroke:var(--subtle);stroke-width:1;stroke-dasharray:3 3}
+.chart-dot{fill:var(--green);stroke:#fff;stroke-width:2}
+.chart-xlab{fill:var(--subtle);font-size:11px;font-weight:500}
+.chart-empty{color:var(--muted);font-size:.86rem;text-align:center;padding:30px 0}
+
+.chart-tip{position:absolute;top:6px;transform:translateX(-50%);background:var(--navy);color:#fff;
+  border-radius:9px;padding:7px 10px;font-size:.72rem;pointer-events:none;white-space:nowrap;
+  box-shadow:var(--shadow);z-index:2}
+.chart-tip .tip-lbl{color:#9DB0C0;font-size:.66rem}
+.chart-tip .tip-val{font-weight:700;font-size:.82rem;margin-top:1px}
+.chart-tip .tip-sub{color:#8FA3B3;font-size:.66rem;margin-top:1px}
+
+/* barras comparativas */
+.bars{display:flex;flex-direction:column;gap:10px}
+.bar-row{display:grid;grid-template-columns:130px 1fr auto;align-items:center;gap:12px}
+@media(max-width:520px){.bar-row{grid-template-columns:90px 1fr auto;gap:8px}}
+.bar-lbl{font-size:.82rem;font-weight:500;color:var(--navy);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bar-track{height:16px;background:var(--bg);border-radius:8px;overflow:hidden}
+.bar-fill{height:100%;background:var(--navy);border-radius:8px;min-width:4px;transition:width .4s ease}
+.bar-val{font-size:.82rem;font-weight:700;color:var(--navy);min-width:56px;text-align:right}

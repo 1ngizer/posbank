@@ -1,0 +1,417 @@
+{
+  "interactionModel": {
+    "languageModel": {
+      "invocationName": "pos bank",
+      "intents": [
+        { "name": "AMAZON.StopIntent", "samples": [] },
+        { "name": "AMAZON.CancelIntent", "samples": [] },
+        { "name": "AMAZON.HelpIntent", "samples": [] },
+        {
+          "name": "LinkAccountIntent",
+          "slots": [{ "name": "codigo", "type": "AMAZON.NUMBER" }],
+          "samples": [
+            "vincula el código {codigo}",
+            "vincular el código {codigo}",
+            "conecta el código {codigo}",
+            "el código es {codigo}",
+            "mi código es {codigo}",
+            "código {codigo}",
+            "vincula mi cuenta",
+            "vincular cuenta",
+            "conecta mi cuenta",
+            "quiero conectar mi cuenta"
+          ]
+        },
+        {
+          "name": "BriefingIntent",
+          "slots": [],
+          "samples": [
+            "dame el informe",
+            "dame el reporte",
+            "el informe del día",
+            "resumen",
+            "dame un resumen",
+            "cómo va el negocio",
+            "cómo va todo",
+            "ponme al día"
+          ]
+        },
+        {
+          "name": "AlertsIntent",
+          "slots": [],
+          "samples": [
+            "qué alertas tengo",
+            "tengo alertas",
+            "hay algo urgente",
+            "qué debo revisar",
+            "cuáles son mis alertas"
+          ]
+        },
+        {
+          "name": "CashStatusIntent",
+          "slots": [],
+          "samples": [
+            "cómo está mi caja",
+            "cómo va mi caja",
+            "cuánto efectivo tengo",
+            "cuál es mi posición de caja",
+            "cómo está mi efectivo",
+            "cuánta plata tengo"
+          ]
+        },
+        {
+          "name": "RunwayIntent",
+          "slots": [],
+          "samples": [
+            "cuál es mi runway",
+            "cuántos días me dura la caja",
+            "cuánto me aguanta el efectivo",
+            "hasta cuándo me alcanza la plata"
+          ]
+        },
+        {
+          "name": "PayablesIntent",
+          "slots": [],
+          "samples": [
+            "cuánto debo",
+            "cuánto le debo a proveedores",
+            "qué pagos tengo pendientes",
+            "cuál es mi próximo pago",
+            "qué tengo por pagar"
+          ]
+        },
+        {
+          "name": "ReceivablesIntent",
+          "slots": [],
+          "samples": [
+            "cuánto me deben",
+            "cómo va la cartera",
+            "tengo cartera vencida",
+            "qué tengo por cobrar",
+            "quién me debe"
+          ]
+        },
+        {
+          "name": "InventoryIntent",
+          "slots": [],
+          "samples": [
+            "cómo va el inventario",
+            "qué tengo en inventario",
+            "qué productos están agotados",
+            "cuánto stock me queda",
+            "revisa el inventario"
+          ]
+        },
+        {
+          "name": "SalesTodayIntent",
+          "slots": [],
+          "samples": [
+            "cuánto he vendido hoy",
+            "cómo van las ventas de hoy",
+            "cuántas facturas hice hoy",
+            "ventas del día"
+          ]
+        },
+        {
+          "name": "AddPayableIntent",
+          "slots": [
+            { "name": "tercero", "type": "NombreTercero" },
+            { "name": "monto", "type": "AMAZON.NUMBER" },
+            { "name": "fecha", "type": "AMAZON.DATE" }
+          ],
+          "samples": [
+            "agrega una cuenta por pagar",
+            "registra una cuenta por pagar",
+            "nueva cuenta por pagar",
+            "anota una factura por pagar",
+            "agrega una cuenta por pagar a {tercero}",
+            "registra una cuenta por pagar a {tercero}",
+            "le debo {monto} a {tercero}",
+            "agrega una cuenta por pagar a {tercero} por {monto}",
+            "registra que le debo {monto} a {tercero}",
+            "agrega una cuenta por pagar a {tercero} por {monto} que vence el {fecha}"
+          ]
+        },
+        {
+          "name": "AddReceivableIntent",
+          "slots": [
+            { "name": "tercero", "type": "NombreTercero" },
+            { "name": "monto", "type": "AMAZON.NUMBER" },
+            { "name": "fecha", "type": "AMAZON.DATE" }
+          ],
+          "samples": [
+            "agrega una cuenta por cobrar",
+            "registra una cuenta por cobrar",
+            "nueva cuenta por cobrar",
+            "anota una factura por cobrar",
+            "agrega una cuenta por cobrar a {tercero}",
+            "{tercero} me debe {monto}",
+            "registra que {tercero} me debe {monto}",
+            "agrega una cuenta por cobrar de {monto} a {tercero}",
+            "{tercero} me debe {monto} y me paga el {fecha}"
+          ]
+        },
+        {
+          "name": "MarkPaidIntent",
+          "slots": [{ "name": "tercero", "type": "NombreTercero" }],
+          "samples": [
+            "ya pagué la cuenta de {tercero}",
+            "marca como pagada la de {tercero}",
+            "ya le pagué a {tercero}",
+            "cancela la cuenta de {tercero}",
+            "marca como pagado a {tercero}"
+          ]
+        },
+        {
+          "name": "RegisterIncomeIntent",
+          "slots": [{ "name": "monto", "type": "AMAZON.NUMBER" }],
+          "samples": [
+            "vendí {monto}",
+            "vendí {monto} mil",
+            "registra una venta de {monto}",
+            "entró {monto}",
+            "anota un ingreso de {monto}"
+          ]
+        },
+        {
+          "name": "RegisterExpenseIntent",
+          "slots": [{ "name": "monto", "type": "AMAZON.NUMBER" }],
+          "samples": [
+            "pagué {monto}",
+            "pagué {monto} mil",
+            "registra un gasto de {monto}",
+            "gasté {monto}",
+            "anota un egreso de {monto}"
+          ]
+        },
+        {
+          "name": "IssueInvoiceIntent",
+          "slots": [
+            { "name": "producto", "type": "AMAZON.SearchQuery" },
+            { "name": "cantidad", "type": "AMAZON.NUMBER" }
+          ],
+          "samples": [
+            "factura {producto}",
+            "vende {producto}",
+            "factura una venta de {producto}",
+            "quiero facturar {producto}",
+            "emite una factura"
+          ]
+        }
+      ],
+      "types": [
+        {
+          "name": "NombreTercero",
+          "values": [
+            { "name": { "value": "Codensa" } },
+            { "name": { "value": "Claro" } },
+            { "name": { "value": "Movistar" } },
+            { "name": { "value": "Energía del Valle" } },
+            { "name": { "value": "Distribuidora La 80" } },
+            { "name": { "value": "Comercializadora Andina" } },
+            { "name": { "value": "Ferretería El Tornillo" } },
+            { "name": { "value": "Papelería Central" } },
+            { "name": { "value": "Almacén La Esquina" } },
+            { "name": { "value": "Proveedor López" } },
+            { "name": { "value": "Cliente ABC" } },
+            { "name": { "value": "Juan Pérez" } },
+            { "name": { "value": "María Gómez" } },
+            { "name": { "value": "Carlos Ramírez" } }
+          ]
+        }
+      ]
+    },
+    "dialog": {
+      "delegationStrategy": "ALWAYS",
+      "intents": [
+        {
+          "name": "LinkAccountIntent",
+          "confirmationRequired": false,
+          "slots": [
+            {
+              "name": "codigo",
+              "type": "AMAZON.NUMBER",
+              "elicitationRequired": true,
+              "confirmationRequired": false,
+              "prompts": { "elicitation": "Elicit.Link.codigo" }
+            }
+          ]
+        },
+        {
+          "name": "AddPayableIntent",
+          "confirmationRequired": true,
+          "prompts": { "confirmation": "Confirm.AddPayable" },
+          "slots": [
+            {
+              "name": "tercero",
+              "type": "NombreTercero",
+              "elicitationRequired": true,
+              "confirmationRequired": false,
+              "prompts": { "elicitation": "Elicit.AddPayable.tercero" }
+            },
+            {
+              "name": "monto",
+              "type": "AMAZON.NUMBER",
+              "elicitationRequired": true,
+              "confirmationRequired": false,
+              "prompts": { "elicitation": "Elicit.AddPayable.monto" }
+            },
+            {
+              "name": "fecha",
+              "type": "AMAZON.DATE",
+              "elicitationRequired": true,
+              "confirmationRequired": false,
+              "prompts": { "elicitation": "Elicit.AddPayable.fecha" }
+            }
+          ]
+        },
+        {
+          "name": "AddReceivableIntent",
+          "confirmationRequired": true,
+          "prompts": { "confirmation": "Confirm.AddReceivable" },
+          "slots": [
+            {
+              "name": "tercero",
+              "type": "NombreTercero",
+              "elicitationRequired": true,
+              "confirmationRequired": false,
+              "prompts": { "elicitation": "Elicit.AddReceivable.tercero" }
+            },
+            {
+              "name": "monto",
+              "type": "AMAZON.NUMBER",
+              "elicitationRequired": true,
+              "confirmationRequired": false,
+              "prompts": { "elicitation": "Elicit.AddReceivable.monto" }
+            },
+            {
+              "name": "fecha",
+              "type": "AMAZON.DATE",
+              "elicitationRequired": true,
+              "confirmationRequired": false,
+              "prompts": { "elicitation": "Elicit.AddReceivable.fecha" }
+            }
+          ]
+        },
+        {
+          "name": "MarkPaidIntent",
+          "confirmationRequired": true,
+          "prompts": { "confirmation": "Confirm.MarkPaid" },
+          "slots": [
+            {
+              "name": "tercero",
+              "type": "NombreTercero",
+              "elicitationRequired": true,
+              "confirmationRequired": false,
+              "prompts": { "elicitation": "Elicit.MarkPaid.tercero" }
+            }
+          ]
+        },
+        {
+          "name": "IssueInvoiceIntent",
+          "confirmationRequired": true,
+          "prompts": { "confirmation": "Confirm.IssueInvoice" },
+          "slots": [
+            {
+              "name": "producto",
+              "type": "AMAZON.SearchQuery",
+              "elicitationRequired": true,
+              "confirmationRequired": false,
+              "prompts": { "elicitation": "Elicit.IssueInvoice.producto" }
+            },
+            {
+              "name": "cantidad",
+              "type": "AMAZON.NUMBER",
+              "elicitationRequired": true,
+              "confirmationRequired": false,
+              "prompts": { "elicitation": "Elicit.IssueInvoice.cantidad" }
+            }
+          ]
+        }
+      ]
+    },
+    "prompts": [
+      {
+        "id": "Elicit.Link.codigo",
+        "variations": [
+          {
+            "type": "PlainText",
+            "value": "Dime el código de seis dígitos que aparece en la aplicación, en la sección Ajustes."
+          }
+        ]
+      },
+      {
+        "id": "Elicit.AddPayable.tercero",
+        "variations": [{ "type": "PlainText", "value": "¿A qué proveedor le debes?" }]
+      },
+      {
+        "id": "Elicit.AddPayable.monto",
+        "variations": [{ "type": "PlainText", "value": "¿De cuánto es la cuenta?" }]
+      },
+      {
+        "id": "Elicit.AddPayable.fecha",
+        "variations": [{ "type": "PlainText", "value": "¿Cuándo vence?" }]
+      },
+      {
+        "id": "Confirm.AddPayable",
+        "variations": [
+          {
+            "type": "PlainText",
+            "value": "Voy a registrar una cuenta por pagar a {tercero} por {monto} pesos, que vence el {fecha}. ¿La guardo?"
+          }
+        ]
+      },
+      {
+        "id": "Elicit.AddReceivable.tercero",
+        "variations": [{ "type": "PlainText", "value": "¿Qué cliente te debe?" }]
+      },
+      {
+        "id": "Elicit.AddReceivable.monto",
+        "variations": [{ "type": "PlainText", "value": "¿De cuánto es la cuenta?" }]
+      },
+      {
+        "id": "Elicit.AddReceivable.fecha",
+        "variations": [{ "type": "PlainText", "value": "¿Cuándo se la cobras?" }]
+      },
+      {
+        "id": "Confirm.AddReceivable",
+        "variations": [
+          {
+            "type": "PlainText",
+            "value": "Voy a registrar que {tercero} te debe {monto} pesos, con vencimiento el {fecha}. ¿La guardo?"
+          }
+        ]
+      },
+      {
+        "id": "Elicit.MarkPaid.tercero",
+        "variations": [{ "type": "PlainText", "value": "¿A qué proveedor le pagaste?" }]
+      },
+      {
+        "id": "Confirm.MarkPaid",
+        "variations": [
+          {
+            "type": "PlainText",
+            "value": "Voy a marcar como pagada la cuenta de {tercero} y a descontarla de tu caja. ¿Confirmo?"
+          }
+        ]
+      },
+      {
+        "id": "Elicit.IssueInvoice.producto",
+        "variations": [{ "type": "PlainText", "value": "¿Qué producto quieres facturar?" }]
+      },
+      {
+        "id": "Elicit.IssueInvoice.cantidad",
+        "variations": [{ "type": "PlainText", "value": "¿Cuántas unidades?" }]
+      },
+      {
+        "id": "Confirm.IssueInvoice",
+        "variations": [
+          {
+            "type": "PlainText",
+            "value": "Voy a facturar {cantidad} de {producto}. ¿Confirmo?"
+          }
+        ]
+      }
+    ]
+  }
+}

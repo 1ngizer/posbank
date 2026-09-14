@@ -1,0 +1,20 @@
+{
+  "name": "PosBank — Radar de caja",
+  "short_name": "PosBank",
+  "description": "Controla el flujo de caja de tu pyme: radar, alertas y acciones en tiempo real.",
+  "lang": "es-CO",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#081C2A",
+  "theme_color": "#081C2A",
+  "icons": [
+    {
+      "src": "/brand/posbank-symbol.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

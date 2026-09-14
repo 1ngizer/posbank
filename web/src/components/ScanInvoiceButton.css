@@ -1,0 +1,13 @@
+.scan-box{margin-bottom:16px}
+.scan-btn{width:100%;display:flex;align-items:center;justify-content:center;gap:9px;
+  padding:.85rem 1rem;border-radius:var(--r-btn);font-weight:600;font-size:.9rem;
+  background:var(--navy);color:#fff;border:none;transition:.18s}
+.scan-btn:hover:not(:disabled){background:#0E2A3D;transform:translateY(-1px)}
+.scan-btn:disabled{opacity:.7;cursor:wait}
+.scan-hint{font-size:.72rem;color:var(--subtle);text-align:center;margin-top:6px}
+.scan-err{background:var(--bad-bg);color:var(--bad-ink);font-size:.8rem;
+  padding:8px 11px;border-radius:9px;margin-top:8px;font-weight:500}
+
+/* Aviso cuando la lectura fue dudosa */
+.scan-review{background:var(--warn-bg);color:var(--warn-ink);font-size:.8rem;
+  padding:9px 12px;border-radius:9px;margin-bottom:12px;font-weight:500}

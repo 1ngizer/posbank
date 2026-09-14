@@ -1,0 +1,38 @@
+.dash-head{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:20px}
+.eyebrow{font-size:.72rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--green)}
+.dash h1{font-size:1.6rem;font-weight:700;color:var(--navy);letter-spacing:-.02em}
+.sec-h{font-size:1.05rem;font-weight:700;color:var(--navy);margin:26px 0 14px;display:flex;align-items:center;gap:8px}
+.badge{background:var(--g1);color:#fff;font-size:.68rem;font-weight:700;border-radius:999px;padding:1px 8px}
+.live-dot{font-size:.72rem;color:var(--green);font-weight:600;animation:pulse 1s ease-in-out infinite}
+@keyframes pulse{50%{opacity:.4}}
+
+/* KPIs */
+.kpis{display:grid;grid-template-columns:1.4fr 1fr;gap:16px}
+@media(max-width:640px){.kpis{grid-template-columns:1fr}}
+.kpi-label{font-size:.78rem;color:var(--muted)}
+.kpi-main .kpi-value{font-size:2.1rem;font-weight:700;color:var(--navy);margin-top:2px}
+.scale{display:flex;justify-content:space-between;font-size:.68rem;color:var(--subtle)}
+.kpi-side{display:flex;flex-direction:column;gap:16px}
+@media(max-width:640px){.kpi-side{flex-direction:row}.kpi-side .mini{flex:1}}
+.mini{display:flex;flex-direction:column;gap:4px;align-items:flex-start}
+.mini-val{font-size:1.4rem;font-weight:700;color:var(--navy)}
+.mini-sub{font-size:.68rem;color:var(--subtle)}
+
+/* Radar */
+.radar{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+@media(max-width:860px){.radar{grid-template-columns:1fr 1fr}}
+@media(max-width:480px){.radar{grid-template-columns:1fr}}
+.scn{display:flex;flex-direction:column;gap:12px}
+.scn-top{display:flex;align-items:center;gap:8px}
+.scn-title{font-weight:600;font-size:.92rem;color:var(--navy)}
+.scn-bottom{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.scn-sub{font-size:.78rem;color:var(--muted)}
+
+/* Alertas */
+.alerts{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:700px){.alerts{grid-template-columns:1fr}}
+.alert{border-left-width:5px}
+.alert-t{display:flex;align-items:center;gap:8px;font-weight:600;color:var(--navy);font-size:.92rem;margin-bottom:6px}
+.alert-m{font-size:.85rem;color:var(--text);font-weight:300}
+.alert-a{font-size:.83rem;color:var(--muted);margin-top:8px;padding-top:8px;border-top:1px solid var(--border)}
+.empty{color:var(--muted);font-size:.9rem;text-align:center}

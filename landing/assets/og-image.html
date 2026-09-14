@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="es-CO">
+<head>
+<meta charset="UTF-8" />
+<title>PosBank — plantilla OG image 1200x630</title>
+<style>
+  @font-face{font-family:'Poppins';font-weight:300;src:url('../fonts/Poppins-Light.woff2') format('woff2'),url('../fonts/Poppins-Light.ttf') format('truetype');}
+  @font-face{font-family:'Poppins';font-weight:400;src:url('../fonts/Poppins-Regular.woff2') format('woff2'),url('../fonts/Poppins-Regular.ttf') format('truetype');}
+  @font-face{font-family:'Poppins';font-weight:600;src:url('../fonts/Poppins-SemiBold.woff2') format('woff2'),url('../fonts/Poppins-SemiBold.ttf') format('truetype');}
+  @font-face{font-family:'Poppins';font-weight:700;src:url('../fonts/Poppins-Bold.woff2') format('woff2'),url('../fonts/Poppins-Bold.ttf') format('truetype');}
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{background:#333;display:flex;align-items:center;justify-content:center;min-height:100vh}
+  /* Lienzo exacto de Open Graph */
+  /* Fondo navy plano: el logo oficial dark trae su propio <rect> #081C2A,
+     así que cualquier degradado detrás haría visible ese recuadro. */
+  .og{width:1200px;height:630px;position:relative;overflow:hidden;
+    background:#081C2A;
+    font-family:'Poppins';color:#fff;padding:72px 80px;display:flex;flex-direction:column;justify-content:space-between}
+  /* Brillos solo en la mitad derecha/inferior, lejos del logo (arriba a la izquierda). */
+  .og::after{content:"";position:absolute;inset:0;pointer-events:none;background:
+    radial-gradient(680px 420px at 100% 100%,rgba(4,197,55,.18),transparent 62%),
+    radial-gradient(560px 340px at 96% 6%,rgba(99,174,241,.14),transparent 62%)}
+  .og > *{position:relative;z-index:2}
+  .logo img{height:74px;display:block}
+  h1{font-size:70px;font-weight:700;line-height:1.06;letter-spacing:-.03em}
+  h1 .light{display:block;font-weight:300;font-size:.55em;color:#C6D4E0;letter-spacing:-.02em;margin-bottom:10px}
+  .tag{color:#04C537;font-weight:600;font-size:27px;margin-top:22px}
+  .bar{height:9px;border-radius:9px;width:420px;margin-top:30px;
+    background:linear-gradient(90deg,#FF2E27 0%,#FF8F1B 34%,#63AEF1 67%,#04C537 100%)}
+  .foot{display:flex;align-items:center;justify-content:space-between;font-size:21px;color:#8A97A8;font-weight:300}
+  .foot b{color:#fff;font-weight:600}
+</style>
+</head>
+<body>
+  <div class="og">
+    <div class="logo"><img src="posbank-logo-dark-wordmark.svg" alt="PosBank" /></div>
+    <div>
+      <h1><span class="light">Controla el flujo de caja</span>de tu pyme</h1>
+      <div class="tag">Un banco en el punto de pago.</div>
+      <div class="bar"></div>
+    </div>
+    <div class="foot">
+      <span>Alertas de liquidez con acción sugerida · <b>WhatsApp · Alexa · App</b></span>
+      <span><b>Ingizer SAS</b> · Colombia</span>
+    </div>
+  </div>
+</body>
+</html>

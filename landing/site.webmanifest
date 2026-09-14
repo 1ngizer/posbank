@@ -1,0 +1,19 @@
+{
+  "name": "PosBank — Radar de caja inteligente",
+  "short_name": "PosBank",
+  "description": "Controla el flujo de caja de tu pyme: alertas de liquidez con acción sugerida por WhatsApp, Alexa y app.",
+  "lang": "es-CO",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#F7F9FB",
+  "theme_color": "#081C2A",
+  "icons": [
+    {
+      "src": "assets/posbank-symbol.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

@@ -1,0 +1,43 @@
+.shell{min-height:100vh;display:flex}
+
+/* ===== Sidebar (desktop) ===== */
+.side{width:230px;flex:none;background:var(--navy);color:#fff;display:flex;flex-direction:column;
+  padding:22px 16px;position:sticky;top:0;height:100vh}
+.side-logo{height:30px;width:auto;align-self:flex-start;margin:6px 6px 26px}
+.side-nav{display:flex;flex-direction:column;gap:14px;flex:1;overflow-y:auto}
+.side-group{display:flex;flex-direction:column;gap:2px}
+.side-group-t{font-size:.66rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#5A6B7A;padding:0 14px 4px}
+.side-link{display:flex;align-items:center;gap:12px;padding:11px 14px;border-radius:10px;
+  color:#9DB0C0;font-weight:500;font-size:.92rem;transition:.15s}
+.side-link:hover{background:rgba(255,255,255,.06);color:#fff}
+.side-link.active{background:rgba(4,197,55,.16);color:#fff}
+.side-logout{display:flex;align-items:center;gap:12px;padding:11px 14px;border-radius:10px;
+  background:transparent;border:none;color:#8FA3B3;font-weight:500;font-size:.92rem;transition:.15s}
+.side-logout:hover{background:rgba(255,255,255,.06);color:#fff}
+
+/* ===== Main ===== */
+.main{flex:1;display:flex;flex-direction:column;min-width:0}
+.topbar{height:60px;display:none;align-items:center;justify-content:space-between;
+  padding:0 18px;background:var(--surface);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:20}
+.top-logo{height:26px;width:auto}
+.top-right{display:flex;align-items:center;gap:10px}
+.company{font-size:.78rem;color:var(--muted);max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.icon-btn{background:transparent;border:none;color:var(--muted);padding:6px;border-radius:8px;display:flex}
+.icon-btn:hover{background:var(--bg);color:var(--text)}
+.content{padding:26px;max-width:1080px;width:100%;margin:0 auto;flex:1}
+
+/* ===== Bottom tabs (mobile) ===== */
+.tabbar{display:none}
+
+@media(max-width:860px){
+  .side{display:none}
+  .topbar{display:flex}
+  .content{padding:18px 16px 90px}
+  .tabbar{display:flex;position:fixed;bottom:0;left:0;right:0;z-index:30;
+    background:var(--surface);border-top:1px solid var(--border);padding:6px 4px 8px;
+    justify-content:space-around;box-shadow:0 -4px 16px -8px rgba(8,28,42,.2)}
+  .tab{display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 10px;border-radius:10px;
+    color:var(--subtle);font-size:.66rem;font-weight:600;flex:1}
+  .tab.active{color:var(--green)}
+  .tab svg{width:22px;height:22px}
+}

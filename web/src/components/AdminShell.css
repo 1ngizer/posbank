@@ -1,0 +1,10 @@
+.admin-shell{min-height:100vh;background:var(--bg)}
+.admin-top{position:sticky;top:0;z-index:20;height:62px;display:flex;align-items:center;justify-content:space-between;
+  padding:0 24px;background:var(--navy);border-bottom:1px solid rgba(255,255,255,.08)}
+.admin-brand{display:flex;align-items:center;gap:10px}
+.admin-brand img{height:26px;width:auto}
+.admin-badge{font-size:.62rem;font-weight:700;letter-spacing:.12em;color:#fff;
+  background:var(--green);padding:3px 8px;border-radius:999px}
+.admin-top-right{display:flex;align-items:center;gap:12px}
+.admin-email{font-size:.8rem;color:#9DB0C0}
+.admin-content{max-width:1080px;margin:0 auto;padding:26px 24px 60px}

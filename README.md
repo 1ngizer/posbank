@@ -18,6 +18,13 @@ Radar de caja inteligente para pymes colombianas. Consultable vía app, Alexa o 
 - Skill Alexa (32/32 tests pasando, timeout resuelto con paralelización)
 - Backend WhatsApp (enrutamiento, servicios, parsers)
 
+## Hecho Recientemente (2026-09-12)
+
+- [x] **Rate limiting y validación de Magic Bytes en `/scan/invoice`**: se limitó el consumo a máx 20 facturas cada 15 min para proteger el saldo en Anthropic. Se agregaron validaciones de magic bytes en memoria (`detectMediaTypeFromMagicBytes`) para admitir únicamente JPEG, PNG, WebP y GIF reales. Suite de pruebas creada en `tests/scan.test.ts` (49/49 tests pasando).
+- [x] **Recuperación de contraseña completa**: endpoints `POST /api/v1/auth/forgot-password` (con rate limiting) y `POST /api/v1/auth/reset-password` en backend; enlace y pantalla interactiva `ResetPassword.tsx` en frontend (`/reset-password`).
+- [x] **CORS estricto y verificación HMAC de WhatsApp**: se cerró el CORS abierto (`*`) a dominios autorizados en `src/app.ts`, y se agregó verificación criptográfica `x-hub-signature-256` con `WHATSAPP_APP_SECRET` en `whatsapp.routes.ts` contra spoofing.
+- [x] **Dependencias seguras**: aplicado `npm audit fix`.
+
 ## Hecho Recientemente (2026-09-11, parte 2)
 
 - [x] **NLU de respaldo con Claude en WhatsApp** (`src/integrations/whatsapp/nlu.ts`): cuando el parser por regex (`parser.ts`) no reconoce un mensaje, se pasa a Claude Opus 5 con `json_schema` para interpretar lenguaje libre, jerga colombiana ("lucas", "palos") y typos. No rompe nada si falta `ANTHROPIC_API_KEY` o si Claude falla — cae a "no entendí" igual que antes. Inerte hasta que WhatsApp esté activo. 5 tests nuevos (43/43 en total).
@@ -36,11 +43,12 @@ Radar de caja inteligente para pymes colombianas. Consultable vía app, Alexa o 
 
 ## Tareas en Progreso
 
-### Seguridad (Alta Prioridad)
+### Seguridad
+- [x] `npm audit fix` — dependencias vulnerables saneadas
+- [x] Rate limiting y validación de Magic Bytes en `/scan/invoice` (protección de presupuesto IA y archivos)
+- [x] Recuperación de contraseña (frontend y backend)
+- [x] Validación criptográfica de Webhooks (WhatsApp y Alexa)
 - [ ] Validar en el simulador de Alexa o un Echo real que un intent legítimo sigue funcionando tras el fix de verificación de firma
-- [ ] `npm audit fix` — vulnerabilidades moderadas en dependencias (qs vía express, uuid vía node-cron)
-- [ ] Agregar rate limiting en `/scan/invoice` (cada llamada cuesta ~USD 0.014 vía Claude)
-- [ ] Implementar recuperación de contraseña (no existe hoy en frontend ni backend)
 
 ### Verificación WhatsApp (Alta Prioridad)
 - [ ] Esperar decisión de Meta sobre la verificación de organización
