@@ -97,6 +97,7 @@ export async function handleAlexaRequest(body: any) {
   }
 
   if (!alexaUserId) return alexaSpeak('No pude identificar tu cuenta.');
+  const userId: string = alexaUserId; // narrowing explícito: TS no lo retiene dentro de los closures de abajo.
 
   const intentName: string = body?.request?.intent?.name ?? '';
   const slots = body?.request?.intent?.slots ?? {};
@@ -104,31 +105,15 @@ export async function handleAlexaRequest(body: any) {
   const confirmacion: string = body?.request?.intent?.confirmationStatus ?? 'NONE';
   logger.info({ intentName, dialogState, confirmacion }, 'Alexa intent');
 
-  // La vinculación se atiende antes de exigir usuario, porque es justamente lo
-  // que se usa cuando todavía no hay ninguno.
-  if (intentName === 'LinkAccountIntent') {
-    if (dialogState && dialogState !== 'COMPLETED') return alexaDelegate();
-    return vincularCuenta(slots, alexaUserId);
-  }
-
-  const user = await resolveUserByAlexaId(alexaUserId);
-  if (!user) {
-    return alexaSpeak(
-      'Tu Alexa todavía no está conectada a PosBank. Abre la aplicación, entra a Ajustes, y dime el código de seis dígitos que aparece ahí.',
-      false,
-    );
-  }
-
-  // Mientras Alexa siga pidiendo datos, le devolvemos el turno.
-  if (INTENTS_CON_DIALOGO.has(intentName)) {
-    if (dialogState && dialogState !== 'COMPLETED') return alexaDelegate();
-    if (confirmacion === 'DENIED') return alexaAsk('Listo, no registré nada.');
-  }
-
-  const ctx = { companyId: user.company_id, userId: user.id, slots };
-
+  // El límite de 6s cubre TODO lo que sigue, incluida la resolución del
+  // usuario (resolveUserByAlexaId) y la vinculación por código. Antes solo
+  // envolvía despacharIntent(): si la primera consulta a Supabase después de
+  // inactividad pagaba el costo de una conexión fría, esa demora quedaba
+  // fuera del reloj de seguridad y podía superar el límite duro de Alexa
+  // (~8s) sin que conLimiteAlexa llegara a dispararse (visto en producción:
+  // 9890ms de respuesta real, sin ningún log de ALEXA_TIMEOUT).
   try {
-    return await conLimiteAlexa(despacharIntent());
+    return await conLimiteAlexa(procesarIntent());
   } catch (err) {
     if (esTimeoutAlexa(err)) {
       logger.error({ intentName }, 'Alexa: se superó el límite de tiempo, respuesta de emergencia');
@@ -140,7 +125,33 @@ export async function handleAlexaRequest(body: any) {
     throw err;
   }
 
-  async function despacharIntent() {
+  async function procesarIntent() {
+    // La vinculación se atiende antes de exigir usuario, porque es justamente
+    // lo que se usa cuando todavía no hay ninguno.
+    if (intentName === 'LinkAccountIntent') {
+      if (dialogState && dialogState !== 'COMPLETED') return alexaDelegate();
+      return vincularCuenta(slots, userId);
+    }
+
+    const user = await resolveUserByAlexaId(userId);
+    if (!user) {
+      return alexaSpeak(
+        'Tu Alexa todavía no está conectada a PosBank. Abre la aplicación, entra a Ajustes, y dime el código de seis dígitos que aparece ahí.',
+        false,
+      );
+    }
+
+    // Mientras Alexa siga pidiendo datos, le devolvemos el turno.
+    if (INTENTS_CON_DIALOGO.has(intentName)) {
+      if (dialogState && dialogState !== 'COMPLETED') return alexaDelegate();
+      if (confirmacion === 'DENIED') return alexaAsk('Listo, no registré nada.');
+    }
+
+    const ctx = { companyId: user.company_id, userId: user.id, slots };
+    return despacharIntent(ctx);
+  }
+
+  async function despacharIntent(ctx: { companyId: string; userId: string; slots: any }) {
   switch (intentName) {
     case 'AMAZON.StopIntent':
     case 'AMAZON.CancelIntent':
