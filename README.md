@@ -15,8 +15,16 @@ Radar de caja inteligente para pymes colombianas. Consultable vía app, Alexa o 
 - Backend completo, app, landing page
 - Motor de caja, inventario, POS
 - Escaneo de facturas con IA (~$0.014 por lectura)
-- Skill Alexa (32/32 tests pasando, timeout resuelto con paralelización)
+- Skill Alexa (49/49 tests pasando; timeout de agosto resuelto con paralelización, cold-start de septiembre mitigado con límite ampliado + keep-alive)
 - Backend WhatsApp (enrutamiento, servicios, parsers)
+
+## Hecho Recientemente (2026-09-15)
+
+- [x] **Fix de cold-start en Alexa (causa raíz confirmada con logs reales de Railway):** el 15 de sep se detectó que `CashStatusIntent` tardó 9890ms en la primera petición tras ~2.5 días de inactividad del servicio (3 peticiones siguientes: 1593ms, 790ms, 442ms — todas rápidas). El límite interno de 6s (`conLimiteAlexa`, agosto) **nunca se disparó** (sin ningún log `ALEXA_TIMEOUT`) porque solo envolvía `despacharIntent()`; `resolveUserByAlexaId()` corría *antes*, sin protección, y ahí es donde probablemente se paga el costo de una conexión fría a Supabase (DNS/TCP/TLS). Esto NO es el bug de agosto (que era 100% reproducible por queries no paralelizadas) — es un patrón distinto y nuevo.
+- [x] **Fix aplicado:** en `alexa.service.ts`, el límite de 6s ahora envuelve **todo** el manejo del intent (resolución de usuario, vinculación por código, y despacho), no solo el tramo final. Así, cualquier demora en cualquier punto cae dentro de la red de seguridad y Alexa nunca ve más de ~6-7s antes de recibir "estoy teniendo problemas".
+- [x] **Mitigación adicional:** ping liviano a Supabase cada 4 minutos en `server.ts` para mantener la conexión caliente (no hay proceso de cron corriendo en producción — `startJobs()` no está desplegado como servicio aparte — así que el keep-alive vive en el propio proceso del API).
+- [x] Desplegado a producción, verificado `/health` OK. Typecheck limpio, 49/49 tests pasando.
+- [ ] **Pendiente:** confirmar con más pruebas (incluyendo esperar >30-60 min de inactividad) que la latencia de la primera petición baja de forma consistente, y que el fallback de 6s responde correctamente si alguna vez sí se dispara.
 
 ## Hecho Recientemente (2026-09-12)
 
@@ -49,6 +57,7 @@ Radar de caja inteligente para pymes colombianas. Consultable vía app, Alexa o 
 - [x] Recuperación de contraseña (frontend y backend)
 - [x] Validación criptográfica de Webhooks (WhatsApp y Alexa)
 - [ ] Validar en el simulador de Alexa o un Echo real que un intent legítimo sigue funcionando tras el fix de verificación de firma
+- [x] Cold-start de Alexa (ver "Hecho Recientemente 2026-09-15"): límite de 6s ampliado a todo el handler + keep-alive a Supabase
 
 ### Verificación WhatsApp (Alta Prioridad)
 - [ ] Esperar decisión de Meta sobre la verificación de organización
