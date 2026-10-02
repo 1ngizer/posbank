@@ -13,6 +13,7 @@ import { Budget } from './pages/Budget';
 import { Policies } from './pages/Policies';
 import { Commitments } from './pages/Commitments';
 import { Accounting } from './pages/Accounting';
+import { Commercial } from './pages/Commercial';
 import { Mas } from './pages/Mas';
 import { Onboarding } from './pages/Onboarding';
 import { AdminShell } from './components/AdminShell';
@@ -69,6 +70,7 @@ export default function App() {
                 <Route path="/politicas" element={<Policies />} />
                 <Route path="/compromisos" element={<Commitments />} />
                 <Route path="/contabilidad" element={<Accounting />} />
+                <Route path="/comercial" element={<Commercial />} />
                 <Route path="/mas" element={<Mas />} />
                 <Route path="*" element={<Navigate to="/" replace />} />
               </Routes>
