@@ -1,6 +1,6 @@
 import { type FormEvent, useEffect, useState } from 'react';
 import { api } from '../lib/api';
-import { cop } from '../lib/format';
+import { cop, formatDate } from '../lib/format';
 import './Pages.css';
 
 interface Movement {
@@ -73,7 +73,7 @@ export function Movements() {
             </div>
             <div className="field">
               <label>Monto (COP)</label>
-              <input type="number" min={0} value={amount} onChange={(e) => setAmount(e.target.value)} placeholder="500000" required />
+              <input type="number" inputMode="numeric" min={0} value={amount} onChange={(e) => setAmount(e.target.value)} placeholder="500000" required />
             </div>
             <div className="field">
               <label>Categoría</label>
@@ -104,7 +104,7 @@ export function Movements() {
               <div className={`ic ${m.type === 'income' ? 'in' : 'out'}`}>{m.type === 'income' ? '+' : '−'}</div>
               <div className="grow">
                 <div className="t">{m.description || CAT_LABEL[m.category]}</div>
-                <div className="s">{CAT_LABEL[m.category]} · {m.date} · {m.source_channel}</div>
+                <div className="s">{CAT_LABEL[m.category]} · {formatDate(m.date)} · {m.source_channel}</div>
               </div>
               <div className={`amt ${m.type === 'income' ? 'in' : 'out'}`}>
                 {m.type === 'income' ? '+' : '−'}{cop(m.amount)}

@@ -3,7 +3,7 @@
 .login-card{background:var(--surface);border-radius:18px;box-shadow:0 30px 70px -24px rgba(0,0,0,.5);
   padding:32px 28px;width:100%;max-width:400px}
 .login-logo{height:34px;width:auto;display:block;margin:0 auto 6px}
-.login-tag{text-align:center;color:var(--green);font-weight:600;font-size:.86rem;margin-bottom:22px}
+.login-tag{text-align:center;color:var(--green-ink);font-weight:600;font-size:.86rem;margin-bottom:22px}
 
 .seg{display:flex;background:var(--bg);border:1px solid var(--border);border-radius:var(--r-btn);padding:4px;margin-bottom:20px}
 .seg button{flex:1;border:none;background:transparent;padding:.55rem;border-radius:8px;font-weight:600;font-size:.86rem;color:var(--muted)}

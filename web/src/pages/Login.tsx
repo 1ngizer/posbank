@@ -62,7 +62,7 @@ export function Login() {
 
   return (
     <div className="login-wrap">
-      <div className="login-card">
+      <main className="login-card">
         <img className="login-logo" src="/brand/posbank-logo-wordmark.svg" alt="PosBank" />
         <p className="login-tag">Un banco en el punto de pago.</p>
 
@@ -84,25 +84,25 @@ export function Login() {
           {mode === 'register' && (
             <>
               <div className="field">
-                <label>Nombre de tu empresa</label>
-                <input value={companyName} onChange={(e) => setCompanyName(e.target.value)} placeholder="Mi Pyme SAS" required />
+                <label htmlFor="companyName">Nombre de tu empresa</label>
+                <input id="companyName" value={companyName} onChange={(e) => setCompanyName(e.target.value)} placeholder="Mi Pyme SAS" required />
               </div>
               <div className="field">
-                <label>Tu nombre</label>
-                <input value={name} onChange={(e) => setName(e.target.value)} placeholder="Nombre y apellido" required />
+                <label htmlFor="ownerName">Tu nombre</label>
+                <input id="ownerName" value={name} onChange={(e) => setName(e.target.value)} placeholder="Nombre y apellido" required />
               </div>
             </>
           )}
 
           <div className="field">
-            <label>Correo</label>
-            <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
+            <label htmlFor="loginEmail">Correo</label>
+            <input id="loginEmail" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
           </div>
 
           {mode !== 'forgot' && (
             <div className="field">
-              <label>Contraseña</label>
-              <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required minLength={8} />
+              <label htmlFor="loginPassword">Contraseña</label>
+              <input id="loginPassword" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required minLength={8} />
               {mode === 'login' && (
                 <div style={{ textAlign: 'right' }}>
                   <button
@@ -118,16 +118,28 @@ export function Login() {
           )}
 
           {mode === 'register' && (
-            <div className="field">
-              <label>Reserva mínima de caja (opcional)</label>
-              <input type="number" value={reserve} onChange={(e) => setReserve(e.target.value)} placeholder="5000000" min={0} />
-            </div>
+            <>
+              <div className="field">
+                <label htmlFor="minReserve">Reserva mínima de caja (opcional)</label>
+                <input id="minReserve" type="number" inputMode="numeric" value={reserve} onChange={(e) => setReserve(e.target.value)} placeholder="5000000" min={0} />
+              </div>
+              <label style={{ display: 'flex', alignItems: 'flex-start', gap: 8, fontSize: '.76rem', color: 'var(--muted)', margin: '10px 0 6px', cursor: 'pointer' }}>
+                <input type="checkbox" required style={{ marginTop: 2 }} />
+                <span>
+                  Autorizo el tratamiento de mis datos personales conforme a la{' '}
+                  <a href="https://posbank.ingizer.com/privacidad" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--navy)', textDecoration: 'underline' }}>
+                    Política de Privacidad
+                  </a>{' '}
+                  (Ley 1581 de 2012).
+                </span>
+              </label>
+            </>
           )}
 
           {error && <div className="login-error">{error}</div>}
           {success && <div className="login-success">{success}</div>}
 
-          <button className="btn btn-primary" style={{ width: '100%', marginTop: 6 }} disabled={loading}>
+          <button className="btn btn-primary" style={{ width: '100%', marginTop: 8 }} disabled={loading}>
             {loading ? <span className="spin" style={{ width: 18, height: 18, borderWidth: 2 }} /> : mode === 'login' ? 'Entrar' : mode === 'register' ? 'Crear cuenta' : 'Enviar enlace'}
           </button>
 
@@ -158,12 +170,12 @@ export function Login() {
               {googleLoading ? 'Conectando…' : 'Continuar con Google'}
             </button>
 
-            {mode === 'login' && (
-              <p className="login-hint">Demo: <b>demo@posbank.com</b> / <b>Demo1234!</b></p>
+            {mode === 'login' && typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') && (
+              <p className="login-hint">Demo local: <b>demo@posbank.com</b> / <b>Demo1234!</b></p>
             )}
           </>
         )}
-      </div>
+      </main>
     </div>
   );
 }

@@ -15,6 +15,18 @@ export function copShort(amount: number): string {
   return `${sign}$${Math.round(abs)}`;
 }
 
+/** Formatea fecha ISO (YYYY-MM-DD o ISO timestamp) a estándar colombiano DD/MM/AAAA. */
+export function formatDate(isoStr?: string | null): string {
+  if (!isoStr) return '';
+  const datePart = isoStr.split('T')[0];
+  const parts = datePart.split('-');
+  if (parts.length === 3) {
+    const [y, m, d] = parts;
+    return `${d}/${m}/${y}`;
+  }
+  return isoStr;
+}
+
 export type ChipKind = 'ok' | 'warn' | 'bad' | 'info';
 
 /** Etiqueta legible + tipo de chip para cada estado del radar. */

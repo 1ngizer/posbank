@@ -41,6 +41,9 @@ const schema = z.object({
   // Claude (Anthropic) — lectura de facturas por foto. Sin esta llave, el
   // endpoint de escaneo responde 503 en vez de romper el arranque.
   ANTHROPIC_API_KEY: z.string().optional(),
+
+  // Clave de cifrado AES-256 para credenciales contables (Alegra, Siigo, etc.)
+  ACCOUNTING_ENCRYPTION_KEY: z.string().min(16).optional(),
 });
 
 const parsed = schema.safeParse(process.env);

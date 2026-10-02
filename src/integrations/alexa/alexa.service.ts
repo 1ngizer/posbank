@@ -61,6 +61,7 @@ async function vincularCuenta(slots: any, alexaUserId: string) {
     no_existe: 'Ese código no lo reconozco. Revisa que sea el que aparece en la aplicación.',
     expirado: 'Ese código ya venció. Genera uno nuevo en la aplicación y dímelo.',
     usado: 'Ese código ya se usó. Genera uno nuevo en la aplicación.',
+    bloqueado: 'Has tenido demasiados intentos fallidos. Por seguridad, espera quince minutos antes de intentar de nuevo.',
     error: 'Algo falló al conectarte. Intenta de nuevo en un momento.',
   };
   return alexaSpeak(mensajes[r.motivo] ?? mensajes.error, false);

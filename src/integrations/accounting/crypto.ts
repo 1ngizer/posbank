@@ -5,7 +5,7 @@ const ALGORITHM = 'aes-256-gcm';
 const IV_LENGTH = 12; // Recomendado para GCM
 
 function getDerivedKey(): Buffer {
-  const secret = process.env.ACCOUNTING_ENCRYPTION_KEY || env.SUPABASE_JWT_SECRET;
+  const secret = env.ACCOUNTING_ENCRYPTION_KEY || env.SUPABASE_JWT_SECRET;
   return crypto.createHash('sha256').update(secret).digest();
 }
 

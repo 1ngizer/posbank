@@ -36,14 +36,17 @@ whatsappRouter.post(
       const signature = req.headers['x-hub-signature-256'];
       const rawBody = (req as express.Request & { rawBody?: Buffer }).rawBody;
       
-      if (!signature || !rawBody) {
+      if (!signature || typeof signature !== 'string' || !rawBody) {
         logger.warn('Falta firma o rawBody en el webhook de WhatsApp');
         res.sendStatus(403);
         return;
       }
       
       const expectedSignature = 'sha256=' + crypto.createHmac('sha256', env.WHATSAPP_APP_SECRET).update(rawBody).digest('hex');
-      if (signature !== expectedSignature) {
+      const sigBuf = Buffer.from(signature);
+      const expBuf = Buffer.from(expectedSignature);
+
+      if (sigBuf.length !== expBuf.length || !crypto.timingSafeEqual(sigBuf, expBuf)) {
         logger.warn('Firma de webhook de WhatsApp inválida. Posible ataque de spoofing.');
         res.sendStatus(403);
         return;

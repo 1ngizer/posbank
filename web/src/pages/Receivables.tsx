@@ -1,6 +1,6 @@
 import { type FormEvent, useEffect, useState } from 'react';
 import { api } from '../lib/api';
-import { cop } from '../lib/format';
+import { cop, formatDate } from '../lib/format';
 import { ScanInvoiceButton, type ScannedInvoice } from '../components/ScanInvoiceButton';
 import './Pages.css';
 
@@ -92,7 +92,7 @@ export function Receivables() {
             <div className="field"><label>Cliente</label>
               <input value={clientName} onChange={(e) => setClientName(e.target.value)} placeholder="Cliente ABC" required /></div>
             <div className="field"><label>Monto (COP)</label>
-              <input type="number" min={0} value={amount} onChange={(e) => setAmount(e.target.value)} placeholder="5200000" required /></div>
+              <input type="number" inputMode="numeric" min={0} value={amount} onChange={(e) => setAmount(e.target.value)} placeholder="5200000" required /></div>
             <div className="field"><label>Vence el</label>
               <input type="date" value={dueDate} onChange={(e) => setDueDate(e.target.value)} required /></div>
             <button className="btn btn-primary" style={{ width: '100%' }} disabled={saving}>Agregar</button>
@@ -109,7 +109,7 @@ export function Receivables() {
               <div key={r.id} className="item">
                 <div className="grow">
                   <div className="t">{r.client_name}</div>
-                  <div className="s">Vence {r.due_date}{r.days_overdue > 0 ? ` · ${r.days_overdue}d vencida` : ''}</div>
+                  <div className="s">Vence {formatDate(r.due_date)}{r.days_overdue > 0 ? ` · ${r.days_overdue}d vencida` : ''}</div>
                 </div>
                 <span className={`chip ${st.kind}`} style={{ marginRight: 10 }}>{st.label}</span>
                 <div className="amt">{cop(r.amount)}</div>

@@ -136,14 +136,14 @@ export function Inventory() {
             </div>
             <div className="row2">
               <div className="field"><label>Costo (COP)</label>
-                <input type="number" min={0} value={cost} onChange={(e) => setCost(e.target.value)} placeholder="0" /></div>
+                <input type="number" inputMode="numeric" min={0} value={cost} onChange={(e) => setCost(e.target.value)} placeholder="0" /></div>
               <div className="field"><label>Stock inicial</label>
-                <input type="number" min={0} value={stock} onChange={(e) => setStock(e.target.value)} placeholder="0" /></div>
+                <input type="number" inputMode="numeric" min={0} value={stock} onChange={(e) => setStock(e.target.value)} placeholder="0" /></div>
             </div>
             {category === 'finished' && (
               <div className="row2">
                 <div className="field"><label>Precio de venta (COP)</label>
-                  <input type="number" min={0} value={price} onChange={(e) => setPrice(e.target.value)} placeholder="0" /></div>
+                  <input type="number" inputMode="numeric" min={0} value={price} onChange={(e) => setPrice(e.target.value)} placeholder="0" /></div>
                 <div className="field"><label>IVA %</label>
                   <select value={taxRate} onChange={(e) => setTaxRate(e.target.value)}>
                     <option value="0">0% (exento)</option>

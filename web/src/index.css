@@ -8,6 +8,7 @@
   /* Marca PosBank */
   --navy:#081C2A; --navy-2:#0E2A3D;
   --green:#04C537; --green-hover:#039A2A; --green-bg:#E7F8ED; --green-ink:#046B22;
+  --green-btn:#038A27; --green-btn-hover:#026E1E;
   /* Espectro del wordmark = estados del radar */
   --g1:#FF2E27; --g2:#FF8F1B; --g3:#63AEF1; --g4:#04C537;
   --wordmark:linear-gradient(90deg,#FF2E27 0%,#FF8F1B 34%,#63AEF1 67%,#04C537 100%);
@@ -38,8 +39,8 @@ input,select{font-family:inherit}
 /* Botones */
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:.5rem;font-weight:600;font-size:.92rem;
   padding:.72rem 1.2rem;border-radius:var(--r-btn);border:1px solid transparent;transition:.18s;white-space:nowrap}
-.btn-primary{background:var(--green);color:#fff;box-shadow:0 6px 16px -8px rgba(4,197,55,.6)}
-.btn-primary:hover{background:var(--green-hover)}
+.btn-primary{background:var(--green-btn);color:#fff;box-shadow:0 6px 16px -8px rgba(3,138,39,.5)}
+.btn-primary:hover{background:var(--green-btn-hover)}
 .btn-primary:disabled{opacity:.55;cursor:not-allowed}
 .btn-ghost{background:var(--surface);border-color:var(--border);color:var(--text)}
 .btn-ghost:hover{border-color:var(--muted)}

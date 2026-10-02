@@ -1,6 +1,6 @@
 import { type FormEvent, useEffect, useState } from 'react';
 import { api } from '../lib/api';
-import { cop } from '../lib/format';
+import { cop, formatDate } from '../lib/format';
 import './Pages.css';
 
 interface Commitment {
@@ -54,7 +54,7 @@ export function Commitments() {
             <div className="field"><label>Nombre</label>
               <input value={name} onChange={(e) => setName(e.target.value)} placeholder="Nómina" required /></div>
             <div className="field"><label>Monto (COP)</label>
-              <input type="number" min={0} value={amount} onChange={(e) => setAmount(e.target.value)} placeholder="8000000" required /></div>
+              <input type="number" inputMode="numeric" min={0} value={amount} onChange={(e) => setAmount(e.target.value)} placeholder="8000000" required /></div>
             <div className="row2">
               <div className="field"><label>Frecuencia</label>
                 <select value={frequency} onChange={(e) => setFrequency(e.target.value)}>
@@ -75,7 +75,7 @@ export function Commitments() {
             <div key={c.id} className="item">
               <div className="grow">
                 <div className="t">{c.name}</div>
-                <div className="s">{FREQ[c.frequency]} · próximo {c.next_due_date}</div>
+                <div className="s">{FREQ[c.frequency]} · próximo {formatDate(c.next_due_date)}</div>
               </div>
               <div className="amt">{cop(c.amount)}</div>
             </div>

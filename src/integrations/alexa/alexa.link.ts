@@ -53,9 +53,18 @@ export async function crearCodigoVinculacion(
   throw new Error('No se pudo generar un código libre');
 }
 
+const MAX_INTENTOS_FALLIDOS = 5;
+const BLOQUEO_MS = 15 * 60 * 1000; // 15 minutos
+
+interface RegistroIntento {
+  fallos: number;
+  bloqueadoHasta: number;
+}
+const intentosPorAlexaUser = new Map<string, RegistroIntento>();
+
 export type ResultadoCanje =
   | { ok: true; empresa: string | null }
-  | { ok: false; motivo: 'no_existe' | 'expirado' | 'usado' | 'error' };
+  | { ok: false; motivo: 'no_existe' | 'expirado' | 'usado' | 'error' | 'bloqueado' };
 
 /**
  * Canjea un código y deja el dispositivo de Alexa asociado al usuario dueño.
@@ -64,6 +73,13 @@ export async function canjearCodigo(
   code: string,
   alexaUserId: string,
 ): Promise<ResultadoCanje> {
+  const ahora = Date.now();
+  const estadoIntentos = intentosPorAlexaUser.get(alexaUserId);
+
+  if (estadoIntentos && ahora < estadoIntentos.bloqueadoHasta && estadoIntentos.fallos >= MAX_INTENTOS_FALLIDOS) {
+    logger.warn({ alexaUserId }, 'canjearCodigo: intento bloqueado por exceso de fallos');
+    return { ok: false, motivo: 'bloqueado' };
+  }
   const { data: registro, error: lecturaErr } = await adminClient
     .from('alexa_link_codes')
     .select('code, user_id, company_id, expires_at, used_at')
@@ -76,9 +92,26 @@ export async function canjearCodigo(
     logger.error({ err: lecturaErr.message }, 'canjearCodigo: fallo al leer el código');
     return { ok: false, motivo: 'error' };
   }
-  if (!registro) return { ok: false, motivo: 'no_existe' };
-  if (registro.used_at) return { ok: false, motivo: 'usado' };
+  function registrarFallo() {
+    const actual = intentosPorAlexaUser.get(alexaUserId);
+    if (!actual || ahora > actual.bloqueadoHasta) {
+      intentosPorAlexaUser.set(alexaUserId, { fallos: 1, bloqueadoHasta: ahora + BLOQUEO_MS });
+    } else {
+      actual.fallos += 1;
+      actual.bloqueadoHasta = ahora + BLOQUEO_MS;
+    }
+  }
+
+  if (!registro) {
+    registrarFallo();
+    return { ok: false, motivo: 'no_existe' };
+  }
+  if (registro.used_at) {
+    registrarFallo();
+    return { ok: false, motivo: 'usado' };
+  }
   if (new Date(registro.expires_at).getTime() < Date.now()) {
+    registrarFallo();
     return { ok: false, motivo: 'expirado' };
   }
 
@@ -103,6 +136,9 @@ export async function canjearCodigo(
     .from('alexa_link_codes')
     .update({ used_at: new Date().toISOString() })
     .eq('code', code);
+
+  // Éxito: limpiamos el historial de intentos fallidos
+  intentosPorAlexaUser.delete(alexaUserId);
 
   const { data: empresa } = await adminClient
     .from('companies')

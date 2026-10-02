@@ -1,6 +1,6 @@
 import { type FormEvent, useEffect, useState } from 'react';
 import { api } from '../lib/api';
-import { cop } from '../lib/format';
+import { cop, formatDate } from '../lib/format';
 import { ScanInvoiceButton, type ScannedInvoice } from '../components/ScanInvoiceButton';
 import './Pages.css';
 
@@ -97,12 +97,12 @@ export function Payables() {
             <div className="field"><label>Proveedor</label>
               <input value={supplierName} onChange={(e) => setSupplierName(e.target.value)} placeholder="Proveedor López" required /></div>
             <div className="field"><label>Monto (COP)</label>
-              <input type="number" min={0} value={amount} onChange={(e) => setAmount(e.target.value)} placeholder="6000000" required /></div>
+              <input type="number" inputMode="numeric" min={0} value={amount} onChange={(e) => setAmount(e.target.value)} placeholder="6000000" required /></div>
             <div className="row2">
               <div className="field"><label>Vence el</label>
                 <input type="date" value={dueDate} onChange={(e) => setDueDate(e.target.value)} required /></div>
               <div className="field"><label>Dto. pronto pago %</label>
-                <input type="number" min={0} max={100} value={discount} onChange={(e) => setDiscount(e.target.value)} placeholder="3" /></div>
+                <input type="number" inputMode="numeric" min={0} max={100} value={discount} onChange={(e) => setDiscount(e.target.value)} placeholder="3" /></div>
             </div>
             <button className="btn btn-primary" style={{ width: '100%' }} disabled={saving}>Agregar</button>
           </form>
@@ -118,7 +118,7 @@ export function Payables() {
               <div key={p.id} className="item">
                 <div className="grow">
                   <div className="t">{p.supplier_name}</div>
-                  <div className="s">Vence {p.due_date}{p.early_payment_discount_pct > 0 ? ` · ${p.early_payment_discount_pct}% pronto pago` : ''}</div>
+                  <div className="s">Vence {formatDate(p.due_date)}{p.early_payment_discount_pct > 0 ? ` · ${p.early_payment_discount_pct}% pronto pago` : ''}</div>
                 </div>
                 <span className={`chip ${st.kind}`} style={{ marginRight: 10 }}>{st.label}</span>
                 <div className="amt">{cop(p.amount)}</div>
