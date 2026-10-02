@@ -2,6 +2,8 @@ import { Router } from 'express';
 import { z } from 'zod';
 import { asyncHandler, ApiError, ok } from '../../shared/http';
 import { requireAuth } from '../../middleware/auth';
+import { AccountingService } from '../../integrations/accounting/accounting.service';
+import { logger } from '../../config/logger';
 
 export const payablesRouter = Router();
 
@@ -66,6 +68,19 @@ payablesRouter.post(
       .select('*')
       .single();
     if (error) throw ApiError.badRequest(error.message);
+
+    // Sincronización en segundo plano con software contable
+    void AccountingService.syncEntity(a.db, a.companyId, 'payable', data.id, {
+      id: data.id,
+      supplierName: data.supplier_name,
+      supplierId: data.supplier_id,
+      amount: data.amount,
+      dueDate: data.due_date,
+      notes: data.notes ?? null,
+    }).catch((err) => {
+      logger.warn({ err: err?.message, payableId: data.id }, 'Sync contable de cuenta por pagar falló');
+    });
+
     return ok(res, data, 201);
   }),
 );

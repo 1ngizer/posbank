@@ -1,0 +1,122 @@
+.accounting-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 14px;
+  margin-bottom: 24px;
+}
+
+.provider-card {
+  border: 2px solid var(--border, #2a2e37);
+  border-radius: 12px;
+  padding: 16px;
+  background: var(--card-bg, #1a1d24);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+  text-align: left;
+}
+
+.provider-card:hover:not(.disabled) {
+  border-color: var(--green, #10b981);
+  transform: translateY(-2px);
+}
+
+.provider-card.active {
+  border-color: var(--green, #10b981);
+  background: rgba(16, 185, 129, 0.08);
+}
+
+.provider-card.disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.provider-card h4 {
+  margin: 0 0 6px 0;
+  font-size: 1.1rem;
+}
+
+.provider-card p {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--muted, #9ca3af);
+}
+
+.badge-tag {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  margin-top: 8px;
+}
+
+.badge-soon {
+  background: rgba(156, 163, 175, 0.2);
+  color: #d1d5db;
+}
+
+.badge-active {
+  background: rgba(16, 185, 129, 0.2);
+  color: #10b981;
+}
+
+.status-box {
+  padding: 16px;
+  border-radius: 10px;
+  margin-bottom: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--card-bg, #1a1d24);
+  border: 1px solid var(--border, #2a2e37);
+}
+
+.status-box.connected {
+  border-left: 4px solid var(--green, #10b981);
+}
+
+.status-box.not-connected {
+  border-left: 4px solid #f59e0b;
+}
+
+.sync-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.88rem;
+  margin-top: 12px;
+}
+
+.sync-table th, .sync-table td {
+  padding: 10px 12px;
+  text-align: left;
+  border-bottom: 1px solid var(--border, #2a2e37);
+}
+
+.sync-table th {
+  color: var(--muted, #9ca3af);
+  font-weight: 500;
+}
+
+.sync-pill {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.sync-pill.synced {
+  background: rgba(16, 185, 129, 0.15);
+  color: #10b981;
+}
+
+.sync-pill.pending {
+  background: rgba(245, 158, 11, 0.15);
+  color: #f59e0b;
+}
+
+.sync-pill.failed {
+  background: rgba(239, 68, 68, 0.15);
+  color: #ef4444;
+}

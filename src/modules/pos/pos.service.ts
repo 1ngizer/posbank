@@ -2,6 +2,8 @@ import { SupabaseClient } from '@supabase/supabase-js';
 import { ApiError } from '../../shared/http';
 import { createMovement } from '../movements/movements.service';
 import { SourceChannel } from '../../shared/types';
+import { AccountingService } from '../../integrations/accounting/accounting.service';
+import { logger } from '../../config/logger';
 
 export interface InvoiceItemInput {
   productId: string;
@@ -122,6 +124,26 @@ export async function issueInvoice(
     sourceChannel: input.sourceChannel ?? 'app',
   });
   await db.from('invoices').update({ cash_movement_id: movement.id }).eq('id', invoice.id);
+
+  // Sincronización con software contable (background, no bloquea el POS)
+  void AccountingService.syncEntity(db, companyId, 'invoice', invoice.id, {
+    id: invoice.id,
+    number,
+    customerName: input.customerName,
+    subtotal,
+    tax,
+    total,
+    items: lines.map((l) => ({
+      description: l.product.name,
+      quantity: l.quantity,
+      unitPrice: l.unitPrice,
+      taxRate: l.taxRate,
+      lineTotal: l.lineTotal,
+      productId: l.product.id,
+    })),
+  }).catch((err) => {
+    logger.warn({ err: err?.message, invoiceId: invoice.id }, 'Sync contable de factura falló');
+  });
 
   return { ...invoice, cash_movement_id: movement.id, items: itemRows };
 }

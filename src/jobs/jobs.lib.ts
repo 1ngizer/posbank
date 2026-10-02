@@ -5,6 +5,7 @@ import { todayBogota, daysBetween } from '../shared/dates';
 import { runCashEngine } from '../modules/analysis/cash-engine';
 import { processCompanyAlerts } from '../modules/alerts/alerts.service';
 import { dispatchAlerts } from '../integrations/notifications';
+import { AccountingService } from '../integrations/accounting/accounting.service';
 
 /** IDs de todas las empresas (para iterar en los jobs). */
 export async function listCompanyIds(): Promise<string[]> {
@@ -89,4 +90,104 @@ export async function refreshOverdueReceivables(): Promise<void> {
     }
   }
   logger.info({ updated }, 'Cartera vencida actualizada');
+}
+
+/**
+ * Reintenta sincronizaciones contables pendientes o fallidas con backoff.
+ */
+export async function reconcileAccountingSyncs(limit = 20): Promise<void> {
+  const { data: pendingLogs, error } = await adminClient
+    .from('accounting_sync_log')
+    .select('*')
+    .in('status', ['pending', 'failed'])
+    .lt('attempts', 5)
+    .order('attempts', { ascending: true })
+    .order('last_attempt_at', { ascending: true })
+    .limit(limit);
+
+  if (error || !pendingLogs || pendingLogs.length === 0) return;
+
+  logger.info({ count: pendingLogs.length }, 'Reconciliando sincronizaciones contables pendientes');
+
+  for (const log of pendingLogs) {
+    try {
+      if (log.entity === 'invoice') {
+        const { data: inv } = await adminClient
+          .from('invoices')
+          .select('id, number, customer_name, subtotal, tax, total, created_at, invoice_items(*)')
+          .eq('id', log.local_id)
+          .single();
+        if (inv) {
+          await AccountingService.syncEntity(adminClient, log.company_id, 'invoice', inv.id, {
+            id: inv.id,
+            number: inv.number,
+            customerName: inv.customer_name,
+            subtotal: inv.subtotal,
+            tax: inv.tax,
+            total: inv.total,
+            date: inv.created_at,
+            items: (inv.invoice_items ?? []).map((i: any) => ({
+              description: i.description,
+              quantity: i.quantity,
+              unitPrice: i.unit_price,
+              taxRate: i.tax_rate,
+              lineTotal: i.line_total,
+              productId: i.product_id,
+            })),
+          });
+        }
+      } else if (log.entity === 'receivable') {
+        const { data: rec } = await adminClient
+          .from('receivables')
+          .select('*')
+          .eq('id', log.local_id)
+          .single();
+        if (rec) {
+          await AccountingService.syncEntity(adminClient, log.company_id, 'receivable', rec.id, {
+            id: rec.id,
+            clientName: rec.client_name,
+            clientId: rec.client_id,
+            amount: rec.amount,
+            dueDate: rec.due_date,
+            issuedDate: rec.issued_date,
+            status: rec.status,
+          });
+        }
+      } else if (log.entity === 'payable') {
+        const { data: pay } = await adminClient
+          .from('payables')
+          .select('*')
+          .eq('id', log.local_id)
+          .single();
+        if (pay) {
+          await AccountingService.syncEntity(adminClient, log.company_id, 'payable', pay.id, {
+            id: pay.id,
+            supplierName: pay.supplier_name,
+            supplierId: pay.supplier_id,
+            amount: pay.amount,
+            dueDate: pay.due_date,
+            notes: pay.notes,
+          });
+        }
+      } else if (log.entity === 'cash_movement') {
+        const { data: mov } = await adminClient
+          .from('cash_movements')
+          .select('*')
+          .eq('id', log.local_id)
+          .single();
+        if (mov) {
+          await AccountingService.syncEntity(adminClient, log.company_id, 'cash_movement', mov.id, {
+            id: mov.id,
+            type: mov.type,
+            amount: mov.amount,
+            category: mov.category,
+            description: mov.description,
+            date: mov.date,
+          });
+        }
+      }
+    } catch (err: any) {
+      logger.warn({ logId: log.id, err: err?.message }, 'Error en reintento de sync contable');
+    }
+  }
 }

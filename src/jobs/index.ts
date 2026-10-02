@@ -4,6 +4,7 @@ import {
   runAlertsForAll,
   snapshotAll,
   refreshOverdueReceivables,
+  reconcileAccountingSyncs,
 } from './jobs.lib';
 
 const TZ = 'America/Bogota';
@@ -51,6 +52,16 @@ export function startJobs(): void {
     () => {
       logger.info('⏰ Job diario 6am: cartera vencida');
       void refreshOverdueReceivables();
+    },
+    { timezone: TZ },
+  );
+
+  // Cada 15 minutos: reconciliar sincronizaciones contables pendientes/fallidas
+  cron.schedule(
+    '*/15 * * * *',
+    () => {
+      logger.info('⏰ Job cada 15m: reconciliación contable');
+      void reconcileAccountingSyncs();
     },
     { timezone: TZ },
   );

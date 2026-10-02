@@ -2,6 +2,8 @@ import { Router } from 'express';
 import { z } from 'zod';
 import { asyncHandler, ApiError, ok } from '../../shared/http';
 import { requireAuth } from '../../middleware/auth';
+import { AccountingService } from '../../integrations/accounting/accounting.service';
+import { logger } from '../../config/logger';
 
 export const receivablesRouter = Router();
 
@@ -65,6 +67,20 @@ receivablesRouter.post(
       .select('*')
       .single();
     if (error) throw ApiError.badRequest(error.message);
+
+    // Sincronización en segundo plano con software contable
+    void AccountingService.syncEntity(a.db, a.companyId, 'receivable', data.id, {
+      id: data.id,
+      clientName: data.client_name,
+      clientId: data.client_id,
+      amount: data.amount,
+      dueDate: data.due_date,
+      issuedDate: data.issued_date,
+      status: data.status,
+    }).catch((err) => {
+      logger.warn({ err: err?.message, receivableId: data.id }, 'Sync contable de cartera falló');
+    });
+
     return ok(res, data, 201);
   }),
 );

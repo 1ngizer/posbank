@@ -5,6 +5,8 @@ import {
   MovementType,
   SourceChannel,
 } from '../../shared/types';
+import { AccountingService } from '../../integrations/accounting/accounting.service';
+import { logger } from '../../config/logger';
 
 export interface CreateMovementInput {
   companyId: string;
@@ -41,6 +43,21 @@ export async function createMovement(db: SupabaseClient, input: CreateMovementIn
     .select('*')
     .single();
   if (error) throw ApiError.badRequest(error.message);
+
+  // Sincronizar en segundo plano si no es venta POS (las ventas POS ya se sincronizan en su factura)
+  if (input.category !== 'sales') {
+    void AccountingService.syncEntity(db, input.companyId, 'cash_movement', data.id, {
+      id: data.id,
+      type: data.type,
+      amount: data.amount,
+      category: data.category,
+      description: data.description,
+      date: data.date,
+    }).catch((err) => {
+      logger.warn({ err: err?.message, movementId: data.id }, 'Sync contable de movimiento falló');
+    });
+  }
+
   return data;
 }
 

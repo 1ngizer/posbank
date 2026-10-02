@@ -16,6 +16,7 @@ import { inventoryRouter } from '../modules/inventory/inventory.routes';
 import { posRouter } from '../modules/pos/pos.routes';
 import { adminRouter } from '../modules/admin/admin.routes';
 import { scanRouter } from '../modules/scan/scan.routes';
+import { accountingRouter } from '../integrations/accounting/accounting.routes';
 
 /**
  * Router raíz de la API v1. Cada módulo registra su sub-router aquí.
@@ -45,6 +46,7 @@ apiRouter.use('/admin', adminRouter);
 apiRouter.use('/scan', scanRouter);
 apiRouter.use('/alerts', alertsRouter);
 apiRouter.use('/dashboard', dashboardRouter);
+apiRouter.use('/accounting', accountingRouter);
 apiRouter.use('/webhooks/whatsapp', whatsappRouter);
 apiRouter.use('/alexa', alexaRouter);
 // cash-position, cash-position/history, runway
