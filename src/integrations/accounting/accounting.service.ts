@@ -82,7 +82,8 @@ export class AccountingService {
   }
 
   /**
-   * Desconecta un proveedor contable.
+   * Desconecta un proveedor contable y BORRA sus credenciales cifradas.
+   * El historial de sincronización (accounting_sync_log) se conserva para auditoría.
    */
   static async disconnectProvider(
     db: SupabaseClient,
@@ -91,7 +92,7 @@ export class AccountingService {
   ): Promise<void> {
     const { error } = await db
       .from('accounting_connections')
-      .update({ status: 'disconnected', updated_at: new Date().toISOString() })
+      .delete()
       .eq('company_id', companyId)
       .eq('provider', provider);
 

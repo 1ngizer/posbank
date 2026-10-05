@@ -235,6 +235,24 @@ commercialRouter.post(
   }),
 );
 
+commercialRouter.patch(
+  '/proposals/:id/status',
+  asyncHandler(async (req, res) => {
+    const { db, companyId } = req.auth!;
+
+    const schema = z.object({
+      status: z.enum(['draft', 'sent', 'accepted', 'rejected']),
+    });
+    const parsed = schema.safeParse(req.body);
+    if (!parsed.success) {
+      throw ApiError.badRequest('Estado inválido', parsed.error.flatten().fieldErrors);
+    }
+
+    const updated = await CommercialService.updateProposalStatus(db, companyId, req.params.id, parsed.data.status);
+    return ok(res, updated);
+  }),
+);
+
 commercialRouter.delete(
   '/proposals/:id',
   asyncHandler(async (req, res) => {

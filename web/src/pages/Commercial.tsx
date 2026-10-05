@@ -216,6 +216,17 @@ export function Commercial() {
     }
   }
 
+  // Cambiar el estado de una propuesta (borrador, enviada, aceptada, rechazada)
+  async function handleProposalStatus(id: string, status: string) {
+    try {
+      await api(`/commercial/proposals/${id}/status`, { method: 'PATCH', body: { status } });
+      setProposals((prev) => prev.map((p) => (p.id === id ? { ...p, status } : p)));
+      flash('Estado actualizado');
+    } catch (err: any) {
+      flash(err.message || 'No se pudo cambiar el estado');
+    }
+  }
+
   useEffect(() => {
     void computePricing();
     void loadBreakEven();
@@ -588,7 +599,18 @@ export function Commercial() {
                       <td>{p.client_name}</td>
                       <td className="num">{cop(p.base_cost)}</td>
                       <td>{p.target_margin_pct}%</td>
-                      <td><span className="badge-tag badge-active">{p.status}</span></td>
+                      <td>
+                        <select
+                          aria-label={`Estado de la propuesta ${p.title}`}
+                          value={p.status}
+                          onChange={(e) => void handleProposalStatus(p.id, e.target.value)}
+                        >
+                          <option value="draft">Borrador</option>
+                          <option value="sent">Enviada</option>
+                          <option value="accepted">Aceptada</option>
+                          <option value="rejected">Rechazada</option>
+                        </select>
+                      </td>
                       <td>{new Date(p.created_at).toLocaleDateString('es-CO')}</td>
                     </tr>
                   ))}

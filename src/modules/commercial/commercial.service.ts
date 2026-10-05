@@ -93,6 +93,28 @@ export class CommercialService {
   }
 
   /**
+   * Cambia el estado de una propuesta (draft, sent, accepted, rejected).
+   */
+  static async updateProposalStatus(
+    db: SupabaseClient,
+    companyId: string,
+    proposalId: string,
+    status: 'draft' | 'sent' | 'accepted' | 'rejected',
+  ) {
+    const { data, error } = await db
+      .from('commercial_proposals')
+      .update({ status })
+      .eq('company_id', companyId)
+      .eq('id', proposalId)
+      .select('*')
+      .maybeSingle();
+
+    if (error) throw ApiError.badRequest(error.message);
+    if (!data) throw new ApiError(404, 'Propuesta no encontrada');
+    return data;
+  }
+
+  /**
    * Elimina una propuesta comercial.
    */
   static async deleteProposal(db: SupabaseClient, companyId: string, proposalId: string) {
