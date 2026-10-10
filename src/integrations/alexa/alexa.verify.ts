@@ -1,6 +1,5 @@
 import https from 'https';
 import crypto from 'crypto';
-import forge from 'node-forge';
 import { NextFunction, Request, Response } from 'express';
 import { env, isTest } from '../../config/env';
 import { logger } from '../../config/logger';
@@ -59,19 +58,21 @@ function fetchCert(certUrl: string): Promise<string> {
   });
 }
 
-/** SAN incluye echo-api.amazon.com y el certificado está vigente hoy. */
-function validateCertContents(pemCert: string): string | null {
+/**
+ * SAN incluye echo-api.amazon.com y el certificado está vigente hoy. Se parsea con
+ * el X509Certificate nativo de Node (la firma ya se verifica con crypto.createVerify).
+ */
+export function validateCertContents(pemCert: string): string | null {
   try {
-    const cert = forge.pki.certificateFromPem(pemCert);
-    const altNames = cert.getExtension('subjectAltName') as
-      | { altNames?: Array<{ value?: string }> }
-      | undefined;
-    const hasValidSan = altNames?.altNames?.some((n) => n.value === VALID_CERT_SAN);
-    if (!hasValidSan) return 'El certificado no pertenece a echo-api.amazon.com';
+    const cert = new crypto.X509Certificate(pemCert);
+    const altNames = (cert.subjectAltName ?? '').split(',').map((n) => n.trim());
+    if (!altNames.includes(`DNS:${VALID_CERT_SAN}`)) {
+      return 'El certificado no pertenece a echo-api.amazon.com';
+    }
 
     const now = Date.now();
-    if (new Date(cert.validity.notAfter).getTime() <= now) return 'Certificado expirado';
-    if (new Date(cert.validity.notBefore).getTime() >= now) return 'Certificado aún no vigente';
+    if (new Date(cert.validTo).getTime() <= now) return 'Certificado expirado';
+    if (new Date(cert.validFrom).getTime() >= now) return 'Certificado aún no vigente';
     return null;
   } catch (err) {
     return `Certificado inválido: ${(err as Error).message}`;

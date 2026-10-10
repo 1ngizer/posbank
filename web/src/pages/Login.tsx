@@ -24,8 +24,9 @@ export function Login() {
   const [success, setSuccess] = useState<string | null>(null);
 
   // campos
-  const [email, setEmail] = useState('demo@posbank.com');
-  const [password, setPassword] = useState('Demo1234!');
+  // La cuenta demo solo se precarga en desarrollo; en producción los campos arrancan vacíos.
+  const [email, setEmail] = useState(import.meta.env.DEV ? 'demo@posbank.com' : '');
+  const [password, setPassword] = useState(import.meta.env.DEV ? 'Demo1234!' : '');
   const [companyName, setCompanyName] = useState('');
   const [name, setName] = useState('');
   const [reserve, setReserve] = useState('');
@@ -170,7 +171,7 @@ export function Login() {
               {googleLoading ? 'Conectando…' : 'Continuar con Google'}
             </button>
 
-            {mode === 'login' && typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') && (
+            {import.meta.env.DEV && mode === 'login' && (
               <p className="login-hint">Demo local: <b>demo@posbank.com</b> / <b>Demo1234!</b></p>
             )}
           </>

@@ -7,8 +7,18 @@ import { logger } from './config/logger';
 import { apiRouter } from './routes';
 import { errorHandler, notFound } from './middleware/error';
 
+/**
+ * Saltos de proxy de confianza delante de la app en Railway: proxy interno
+ * (remoteAddress 100.64.x.x) + nodo de borde (último valor de X-Forwarded-For).
+ * El valor siguiente hacia la izquierda es la IP real del cliente; lo que el
+ * cliente agregue por su cuenta queda más a la izquierda y se ignora. Sin esto,
+ * req.ip es la IP del proxy y los rate limiters cuentan por nodo, no por cliente.
+ */
+export const TRUST_PROXY_HOPS = 2;
+
 export function createApp(): Application {
   const app = express();
+  app.set('trust proxy', TRUST_PROXY_HOPS);
 
   app.use(helmet());
   
