@@ -10,6 +10,12 @@ dotenv.config();
 const schema = z.object({
   NODE_ENV: z.enum(['development', 'test', 'production']).default('development'),
   PORT: z.coerce.number().default(3000),
+  // Activa los cron jobs (alertas, cartera, reconciliación) dentro de este mismo servicio.
+  // Apagado por defecto: los jobs envían alertas reales a los usuarios.
+  ENABLE_JOBS: z
+    .enum(['true', 'false'])
+    .default('false')
+    .transform((v) => v === 'true'),
   API_BASE_PATH: z.string().default('/api/v1'),
   LOG_LEVEL: z
     .enum(['fatal', 'error', 'warn', 'info', 'debug', 'trace'])
