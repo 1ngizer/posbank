@@ -57,6 +57,59 @@ interface AcidTestData {
   currentRunwayDaysUsed: number;
 }
 
+type OvStatus = 'covers' | 'below' | 'no_sales' | 'negative_margin' | 'no_cost';
+
+interface OverviewProduct {
+  id: string;
+  name: string;
+  listPrice: number;
+  unitCost: number;
+  contributionPerUnit: number;
+  contributionRatioPct: number;
+  unitsPerMonth: number;
+  revenuePerMonth: number;
+  contributionPerMonth: number;
+  shareOfSalesPct: number;
+  allocatedFixedCosts: number;
+  breakEvenUnitsAlone: number | null;
+  breakEvenUnitsShare: number | null;
+  status: OvStatus;
+  warning?: string;
+}
+
+interface OverviewCompany {
+  fixedCostsMonthly: number;
+  revenuePerMonth: number;
+  contributionPerMonth: number;
+  weightedContributionRatioPct: number;
+  breakEvenRevenue: number | null;
+  coveragePct: number | null;
+  gapRevenue: number | null;
+  safetyMarginPct: number | null;
+  profitPerMonth: number;
+  viable: boolean;
+  dayFixedCostsCovered: number | null;
+  monthToDate?: { coveredPct: number; dayOfMonth: number; onTrack: boolean };
+  message: string;
+}
+
+interface BreakEvenOverviewData {
+  windowDays: number;
+  allocation: 'none' | 'sales' | 'margin';
+  company: OverviewCompany;
+  products: OverviewProduct[];
+  notes: string[];
+  unassignedRevenuePerMonth: number;
+}
+
+const OV_STATUS: Record<OvStatus, { label: string; cls: string }> = {
+  covers: { label: 'Cubre su parte', cls: 'healthy' },
+  below: { label: 'No alcanza', cls: 'warning' },
+  no_sales: { label: 'Sin ventas', cls: 'underinvested' },
+  negative_margin: { label: 'Pierde dinero', cls: 'critical' },
+  no_cost: { label: 'Sin costo', cls: 'warning' },
+};
+
 export function Commercial() {
   const [tab, setTab] = useState<'pricing' | 'breakeven' | 'unitecon' | 'acidtest' | 'proposals'>('pricing');
   const [toast, setToast] = useState<string | null>(null);
@@ -74,6 +127,11 @@ export function Commercial() {
 
   // 2. Tab Break-Even
   const [beData, setBeData] = useState<BreakEvenData | null>(null);
+  // Punto de equilibrio general y por producto (ventas reales)
+  const [ov, setOv] = useState<BreakEvenOverviewData | null>(null);
+  const [ovLoading, setOvLoading] = useState(false);
+  const [ovDays, setOvDays] = useState('60');
+  const [ovAlloc, setOvAlloc] = useState<'none' | 'sales' | 'margin'>('sales');
   const [bePrice, setBePrice] = useState('75000');
   const [beCost, setBeCost] = useState('45000');
   const [beUnitsProj, setBeUnitsProj] = useState('250');
@@ -135,6 +193,21 @@ export function Commercial() {
       setBeData(res);
     } catch {
       /* ignore */
+    }
+  }
+
+  // Punto de equilibrio de toda la empresa y de cada producto, con las ventas reales
+  async function loadOverview() {
+    setOvLoading(true);
+    try {
+      const res = await api<BreakEvenOverviewData>(
+        `/commercial/break-even/overview?days=${ovDays}&allocation=${ovAlloc}`,
+      );
+      setOv(res);
+    } catch (err: any) {
+      flash(err.message || 'No se pudo calcular el punto de equilibrio');
+    } finally {
+      setOvLoading(false);
     }
   }
 
@@ -226,6 +299,11 @@ export function Commercial() {
       flash(err.message || 'No se pudo cambiar el estado');
     }
   }
+
+  useEffect(() => {
+    void loadOverview();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [ovDays, ovAlloc]);
 
   useEffect(() => {
     void computePricing();
@@ -375,6 +453,161 @@ export function Commercial() {
       {/* ──────────────── TAB 2: BREAK-EVEN ──────────────── */}
       {tab === 'breakeven' && (
         <div>
+          {/* ── Equilibrio de toda la empresa y por producto, con ventas reales ── */}
+          <div className="card" style={{ marginBottom: 18 }}>
+            <h3>Punto de equilibrio de tu empresa</h3>
+            <p className="sub" style={{ fontSize: '.84rem' }}>
+              Cuánto necesitas vender al mes para cubrir tus costos fijos, calculado con lo que realmente facturas.
+            </p>
+
+            <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', margin: '10px 0 14px' }}>
+              <label style={{ fontSize: '.8rem' }}>
+                Ventas de los últimos{' '}
+                <select value={ovDays} onChange={(e) => setOvDays(e.target.value)}>
+                  <option value="30">30 días</option>
+                  <option value="60">60 días</option>
+                  <option value="90">90 días</option>
+                </select>
+              </label>
+              <label style={{ fontSize: '.8rem' }}>
+                Costos fijos por producto{' '}
+                <select value={ovAlloc} onChange={(e) => setOvAlloc(e.target.value as 'none' | 'sales' | 'margin')}>
+                  <option value="sales">Repartir según ventas</option>
+                  <option value="margin">Repartir según margen</option>
+                  <option value="none">No repartir</option>
+                </select>
+              </label>
+            </div>
+
+            {ovLoading && !ov ? (
+              <p style={{ color: 'var(--muted)' }}>Calculando…</p>
+            ) : ov ? (
+              <>
+                <div
+                  className="recommendations-box"
+                  style={{ marginTop: 0, marginBottom: 14 }}
+                  role="status"
+                >
+                  {ov.company.message}
+                </div>
+
+                <div className="kpi-grid">
+                  <div className="kpi-card">
+                    <div className="kpi-title">Costos fijos del mes</div>
+                    <div className="kpi-value">{cop(ov.company.fixedCostsMonthly)}</div>
+                    <div className="kpi-sub">Arriendo, nómina, servicios…</div>
+                  </div>
+                  <div className="kpi-card">
+                    <div className="kpi-title">Vendes al mes</div>
+                    <div className="kpi-value">{cop(ov.company.revenuePerMonth)}</div>
+                    <div className="kpi-sub">Margen promedio {ov.company.weightedContributionRatioPct}%</div>
+                  </div>
+                  <div className="kpi-card">
+                    <div className="kpi-title">Necesitas vender</div>
+                    <div className="kpi-value" style={{ color: 'var(--green)' }}>
+                      {ov.company.breakEvenRevenue === null ? 'No viable' : cop(ov.company.breakEvenRevenue)}
+                    </div>
+                    <div className="kpi-sub">
+                      {ov.company.coveragePct === null
+                        ? 'Con la mezcla actual no se cubre'
+                        : `Hoy cubres el ${Math.round(ov.company.coveragePct)}% de esa meta`}
+                    </div>
+                  </div>
+                  <div className="kpi-card">
+                    <div className="kpi-title">Cubres tus costos el día</div>
+                    <div className="kpi-value">
+                      {ov.company.dayFixedCostsCovered === null ? 'No alcanza' : `${ov.company.dayFixedCostsCovered} del mes`}
+                    </div>
+                    <div className="kpi-sub">
+                      {ov.company.profitPerMonth >= 0
+                        ? `Ganancia estimada ${cop(ov.company.profitPerMonth)}`
+                        : `Pérdida estimada ${cop(Math.abs(ov.company.profitPerMonth))}`}
+                    </div>
+                  </div>
+                  {ov.company.monthToDate && (
+                    <div className="kpi-card">
+                      <div className="kpi-title">Este mes llevas</div>
+                      <div
+                        className="kpi-value"
+                        style={{ color: ov.company.monthToDate.onTrack ? 'var(--green)' : 'var(--red, #c0392b)' }}
+                      >
+                        {ov.company.monthToDate.coveredPct}%
+                      </div>
+                      <div className="kpi-sub">
+                        de tus costos fijos cubiertos al día {ov.company.monthToDate.dayOfMonth}
+                        {ov.company.monthToDate.onTrack ? ' (vas al ritmo)' : ' (vas atrasado)'}
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                <h4 style={{ margin: '18px 0 8px' }}>Por producto</h4>
+                {ov.products.length === 0 ? (
+                  <p style={{ color: 'var(--muted)', fontStyle: 'italic' }}>
+                    No hay productos terminados activos en tu inventario.
+                  </p>
+                ) : (
+                  <div style={{ overflowX: 'auto' }}>
+                    <table className="pricing-table">
+                      <thead>
+                        <tr>
+                          <th>Producto</th>
+                          <th>Precio</th>
+                          <th>Costo</th>
+                          <th>Aporta por unidad</th>
+                          <th>Vende al mes</th>
+                          <th>% de tus ventas</th>
+                          <th>Equilibrio si fuera el único</th>
+                          {ov.allocation !== 'none' && <th>Equilibrio de su parte</th>}
+                          <th>Estado</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {ov.products.map((p) => (
+                          <tr key={p.id}>
+                            <td>
+                              <strong>{p.name}</strong>
+                              {p.warning && (
+                                <div style={{ fontSize: '.72rem', color: 'var(--muted)' }}>{p.warning}</div>
+                              )}
+                            </td>
+                            <td className="num">{cop(p.listPrice)}</td>
+                            <td className="num">{cop(p.unitCost)}</td>
+                            <td className="num">
+                              {cop(p.contributionPerUnit)} <span style={{ color: 'var(--muted)' }}>({p.contributionRatioPct}%)</span>
+                            </td>
+                            <td className="num">{p.unitsPerMonth} uds</td>
+                            <td className="num">{p.shareOfSalesPct}%</td>
+                            <td className="num">
+                              {p.breakEvenUnitsAlone === null ? '—' : `${p.breakEvenUnitsAlone.toLocaleString('es-CO')} uds`}
+                            </td>
+                            {ov.allocation !== 'none' && (
+                              <td className="num">
+                                {p.breakEvenUnitsShare === null ? '—' : `${p.breakEvenUnitsShare.toLocaleString('es-CO')} uds`}
+                              </td>
+                            )}
+                            <td>
+                              <span className={`health-badge ${OV_STATUS[p.status].cls}`}>{OV_STATUS[p.status].label}</span>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+
+                {ov.notes.length > 0 && (
+                  <ul style={{ fontSize: '.78rem', color: 'var(--muted)', marginTop: 12, paddingLeft: 18 }}>
+                    {ov.notes.map((n) => (
+                      <li key={n}>{n}</li>
+                    ))}
+                  </ul>
+                )}
+              </>
+            ) : null}
+          </div>
+
+          <h3 style={{ margin: '4px 0 10px' }}>Simulador de un solo producto</h3>
           <div className="kpi-grid">
             <div className="kpi-card">
               <div className="kpi-title">Costos Fijos del Mes</div>

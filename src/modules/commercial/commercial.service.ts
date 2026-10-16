@@ -1,8 +1,116 @@
 import { SupabaseClient } from '@supabase/supabase-js';
 import { ApiError } from '../../shared/http';
 import { logger } from '../../config/logger';
+import {
+  computeBreakEvenOverview,
+  type BreakEvenOverview,
+  type FixedCostAllocation,
+  type ProductSalesInput,
+} from './breakeven.overview';
+
+const BOGOTA_OFFSET_HOURS = 5; // Colombia no usa horario de verano: siempre UTC-5
+
+/** Fecha de calendario de Bogotá para `now`, con el inicio del mes en UTC. */
+function bogotaMonth(now: Date) {
+  const local = new Date(now.getTime() - BOGOTA_OFFSET_HOURS * 3600 * 1000);
+  const year = local.getUTCFullYear();
+  const month = local.getUTCMonth();
+  return {
+    dayOfMonth: local.getUTCDate(),
+    daysInMonth: new Date(Date.UTC(year, month + 1, 0)).getUTCDate(),
+    monthStartUtc: new Date(Date.UTC(year, month, 1, BOGOTA_OFFSET_HOURS, 0, 0)),
+  };
+}
 
 export class CommercialService {
+  /**
+   * Punto de equilibrio general y por producto con las ventas reales (facturas emitidas)
+   * de los últimos `days` días y los costos fijos de fixed_commitments.
+   */
+  static async getBreakEvenOverview(
+    db: SupabaseClient,
+    companyId: string,
+    days: number,
+    allocation: FixedCostAllocation,
+    now: Date = new Date(),
+  ): Promise<BreakEvenOverview & { unassignedRevenuePerMonth: number }> {
+    const fixedCostsMonthly = await CommercialService.getMonthlyFixedCosts(db, companyId);
+    const { dayOfMonth, daysInMonth, monthStartUtc } = bogotaMonth(now);
+    const windowStart = new Date(now.getTime() - days * 24 * 3600 * 1000);
+    const since = windowStart < monthStartUtc ? windowStart : monthStartUtc;
+
+    const { data: products, error: pErr } = await db
+      .from('products')
+      .select('id, name, price, cost')
+      .eq('company_id', companyId)
+      .eq('is_active', true)
+      .eq('category', 'finished');
+    if (pErr) throw ApiError.badRequest(pErr.message);
+
+    const { data: items, error: iErr } = await db
+      .from('invoice_items')
+      .select('product_id, quantity, line_total, invoices!inner(status, created_at)')
+      .eq('company_id', companyId)
+      .eq('invoices.status', 'issued')
+      .gte('invoices.created_at', since.toISOString())
+      .limit(50000);
+    if (iErr) throw ApiError.badRequest(iErr.message);
+
+    const byProduct = new Map<string, { units: number; revenue: number }>();
+    const costById = new Map<string, number>((products ?? []).map((p) => [p.id as string, Number(p.cost) || 0]));
+    let monthContribution = 0;
+    let unassignedRevenue = 0;
+
+    for (const row of items ?? []) {
+      const inv = Array.isArray(row.invoices) ? row.invoices[0] : row.invoices;
+      const at = inv?.created_at ? new Date(inv.created_at) : null;
+      if (!at) continue;
+      const qty = Number(row.quantity) || 0;
+      const total = Number(row.line_total) || 0;
+
+      if (!row.product_id || !costById.has(row.product_id as string)) {
+        if (at >= windowStart) unassignedRevenue += total;
+        continue;
+      }
+      const cost = costById.get(row.product_id as string) ?? 0;
+      if (at >= windowStart) {
+        const acc = byProduct.get(row.product_id as string) ?? { units: 0, revenue: 0 };
+        acc.units += qty;
+        acc.revenue += total;
+        byProduct.set(row.product_id as string, acc);
+      }
+      if (at >= monthStartUtc) monthContribution += total - cost * qty;
+    }
+
+    const inputs: ProductSalesInput[] = (products ?? []).map((p) => {
+      const sold = byProduct.get(p.id as string);
+      return {
+        id: p.id as string,
+        name: p.name as string,
+        listPrice: Number(p.price) || 0,
+        unitCost: Number(p.cost) || 0,
+        unitsSold: sold?.units ?? 0,
+        revenue: sold?.revenue ?? 0,
+      };
+    });
+
+    const overview = computeBreakEvenOverview({
+      fixedCostsMonthly,
+      products: inputs,
+      windowDays: days,
+      allocation,
+      monthToDate: { contribution: monthContribution, dayOfMonth, daysInMonth },
+    });
+
+    const unassignedRevenuePerMonth = Math.round(unassignedRevenue * (30 / days));
+    if (unassignedRevenuePerMonth > 0) {
+      overview.notes.push(
+        'Hay ventas sin producto del inventario asociado; no entran en este cálculo porque no se conoce su costo.',
+      );
+    }
+    return { ...overview, unassignedRevenuePerMonth };
+  }
+
   /**
    * Obtiene la suma mensual normalizada de compromisos fijos de la empresa (fixed_commitments).
    */

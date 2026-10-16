@@ -46,6 +46,34 @@ commercialRouter.get(
 );
 
 /**
+ * GET /api/v1/commercial/break-even/overview?days=60&allocation=sales
+ * Punto de equilibrio de toda la empresa (mezcla real de ventas) y de cada producto del inventario.
+ */
+commercialRouter.get(
+  '/break-even/overview',
+  asyncHandler(async (req, res) => {
+    const { db, companyId } = req.auth!;
+
+    const schema = z.object({
+      days: z.coerce.number().int().min(7).max(365).default(60),
+      allocation: z.enum(['none', 'sales', 'margin']).default('sales'),
+    });
+    const parsed = schema.safeParse(req.query);
+    if (!parsed.success) {
+      throw ApiError.badRequest('Parámetros inválidos', parsed.error.flatten().fieldErrors);
+    }
+
+    const overview = await CommercialService.getBreakEvenOverview(
+      db,
+      companyId,
+      parsed.data.days,
+      parsed.data.allocation,
+    );
+    return ok(res, overview);
+  }),
+);
+
+/**
  * POST /api/v1/commercial/simulate-pricing
  * Simula escalas de precios por volumen y economías de escala en compras de insumos.
  */
