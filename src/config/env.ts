@@ -48,6 +48,9 @@ const schema = z.object({
   // endpoint de escaneo responde 503 en vez de romper el arranque.
   ANTHROPIC_API_KEY: z.string().optional(),
 
+  // Llave compartida con Ingizer para su ruta de lectura de la valoración. Sin ella la ruta responde 503.
+  INGIZER_INTEGRATION_KEY: z.string().min(24).optional(),
+
   // Clave de cifrado AES-256 para credenciales contables (Alegra, Siigo, etc.)
   ACCOUNTING_ENCRYPTION_KEY: z.string().min(16).optional(),
 });

@@ -17,6 +17,7 @@ import { posRouter } from '../modules/pos/pos.routes';
 import { adminRouter } from '../modules/admin/admin.routes';
 import { scanRouter } from '../modules/scan/scan.routes';
 import { accountingRouter } from '../integrations/accounting/accounting.routes';
+import { ingizerRouter } from '../integrations/ingizer/ingizer.routes';
 import { commercialRouter } from '../modules/commercial/commercial.routes';
 
 /**
@@ -49,6 +50,7 @@ apiRouter.use('/alerts', alertsRouter);
 apiRouter.use('/dashboard', dashboardRouter);
 apiRouter.use('/accounting', accountingRouter);
 apiRouter.use('/commercial', commercialRouter);
+apiRouter.use('/integrations/ingizer', ingizerRouter);
 apiRouter.use('/webhooks/whatsapp', whatsappRouter);
 apiRouter.use('/alexa', alexaRouter);
 // cash-position, cash-position/history, runway
